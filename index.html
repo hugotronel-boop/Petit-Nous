@@ -1,1717 +1,1887 @@
-<!DOCTYPE html>
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>Petit Nous</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-<style>
-/* ==========================================================================
-   1. VARIABLES & THEMES
-   ========================================================================== */
-:root {
-  /* Mode Clair */
-  --bg-gradient: linear-gradient(180deg, #fff7f2, #fdeee7);
-  --card-bg: rgba(255, 255, 255, 0.65);
-  --text-color: #3a2e2a;
-  --title-color: #3a2e2a;
-  --btn-bg: #e9a89b;
-  --btn-shadow: rgba(233, 168, 155, 0.35);
-  --input-bg: rgba(255, 255, 255, 0.8);
-  --progress-bg: rgba(0, 0, 0, 0.05);
-}
-
-[data-theme="dark"] {
-  /* Mode Sombre */
-  --bg-gradient: linear-gradient(180deg, #2c2421, #1a1614);
-  --card-bg: rgba(58, 46, 42, 0.8);
-  --text-color: #fdeee7;
-  --title-color: #ffffff;
-  --btn-bg: #d08b7d;
-  --btn-shadow: rgba(0, 0, 0, 0.3);
-  --input-bg: rgba(255, 255, 255, 0.1);
-  --progress-bg: rgba(255, 255, 255, 0.1);
-}
-
-/* ==========================================================================
-   2. BASE & RESET
-   ========================================================================== */
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background: var(--bg-gradient);
-  color: var(--text-color);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-  overflow-x: hidden;
-}
-
-.app {
-  width: 100%;
-  max-width: 390px;
-  padding: 24px;
-  box-sizing: border-box;
-}
-
-h1 {
-  font-family: "Pacifico", cursive;
-  font-size: 42px;
-  text-align: center;
-  margin: 0 0 12px 0;
-  color: var(--title-color);
-  transition: color 0.3s ease;
-}
-
-.subtitle, .parents-text {
-  text-align: center;
-  font-size: 15px;
-  opacity: 0.8;
-  margin-bottom: 24px;
-}
-
-/* ==========================================================================
-   3. COMPOSANTS RÉUTILISABLES (Boutons, Cards, Inputs)
-   ========================================================================== */
-.card {
-  background: var(--card-bg);
-  border-radius: 26px;
-  padding: 24px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  margin-bottom: 20px;
-}
-
-.btn {
-  width: 100%;
-  padding: 16px;
-  border-radius: 20px;
-  border: none;
-  background: var(--btn-bg);
-  color: white;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: 0 8px 18px var(--btn-shadow);
-  transition: transform 0.2s, opacity 0.2s;
-}
-
-.btn:active { transform: translateY(2px); }
-
-.btn-secondary {
-  background: var(--input-bg);
-  color: var(--text-color);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* Correction de l'alignement de tous les champs */
-input, textarea, select {
-  width: 100%;
-  height: 52px; /* Hauteur fixe pour tout le monde */
-  padding: 0 16px;
-  border-radius: 18px;
-  border: 1px solid rgba(0,0,0,0.1);
-  background: var(--input-bg);
-  color: var(--text-color);
-  font-size: 15px;
-  margin-bottom: 16px;
-  box-sizing: border-box; /* IMPORTANT : inclut le padding dans la largeur */
-  display: block;
-  appearance: none; /* Enlève le style par défaut des navigateurs */
-  -webkit-appearance: none;
-}
-
-textarea { 
-  height: 100px; 
-  padding: 16px; 
-}
-
-/* Correction spécifique pour les champs date qui se comportent mal sur iPhone/Android */
-input[type="date"] {
-  display: flex;
-  align-items: center;
-  line-height: normal;
-}
-
-/* Style uniforme pour le sélecteur de fichier */
-input[type="file"] {
-  padding-top: 13px; /* Aligne le texte "Choisir un fichier" verticalement */
-  cursor: pointer;
-}
-
-/* Style du bouton "Choisir un fichier" à l'intérieur du cadre */
-input[type="file"]::-webkit-file-upload-button {
-  background: var(--btn-bg);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  padding: 4px 8px;
-  margin-right: 10px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-label {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 8px;
-  display: block;
-  opacity: 0.9;
-}
-
-.back-btn {
-  background: var(--card-bg);
-  border: none;
-  border-radius: 50%;
-  width: 44px; height: 44px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; cursor: pointer;
-  position: absolute; top: 20px; left: 20px; z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  color: var(--text-color);
-}
-
-/* ==========================================================================
-   4. NAVIGATION & LISTES HORIZONTALES
-   ========================================================================== */
-.floating-buttons, .horizontal-scroll {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 12px 5px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-.floating-buttons::-webkit-scrollbar { display: none; }
-
-.floating-buttons .btn {
-  flex: 0 0 auto;
-  min-width: 160px;
-  scroll-snap-align: start;
-}
-
-/* ==========================================================================
-   5. ÉLÉMENTS SPÉCIFIQUES (Sexe, Timeline, Souvenirs)
-   ========================================================================== */
-/* Sexe du Bébé - VERSION CORRIGÉE */
-.gender-choice {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0;
-  width: 100%;
-}
-
-.gender-option {
-  flex: 1; /* Force les 3 boutons à faire la même taille exacte */
-  background: var(--input-bg);
-  border-radius: 14px;
-  padding: 8px 4px; 
-  text-align: center;
-  font-size: 13px; /* Un peu plus petit pour que "Surprise" ne dépasse pas */
-  cursor: pointer;
-  transition: 0.3s;
-  border: 1px solid rgba(0,0,0,0.05);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-}
-
-.gender-option input { 
-  display: none; 
-}
-
-.gender-option span {
-  display: block;
-  width: 100%;
-  padding: 6px 0;
-  border-radius: 10px;
-  transition: 0.2s;
-}
-
-/* Styles quand coché : on applique la couleur sur le span qui remplit le bouton */
-.gender-option.boy input:checked + span { 
-  background: #b3d9ff; 
-  color: #004085; 
-}
-
-.gender-option.girl input:checked + span { 
-  background: #ffd6e7; 
-  color: #85144b; 
-}
-
-.gender-option.neutral input:checked + span { 
-  background: #e6e6e6; 
-  color: #333; 
-}
-
-/* Timeline */
-.week-card {
-  background: var(--card-bg);
-  border-radius: 20px;
-  padding: 16px;
-  margin-bottom: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-left: 5px solid transparent;
-}
-
-.trimester1 { border-left-color: #e9a89b; }
-.trimester2 { border-left-color: #f4c542; }
-.trimester3 { border-left-color: #3a2e2a; }
-
-/* Progress Bar */
-.progress-container {
-  width: 100%;
-  height: 12px;
-  background: var(--progress-bg);
-  border-radius: 10px;
-  margin: 15px 0;
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background: var(--btn-bg);
-  transition: width 0.5s ease;
-}
-
-/* Checklist & Prénoms */
-.checklist-item, .prenom-item {
-  background: var(--card-bg);
-  border-radius: 16px;
-  padding: 12px 16px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.gender.garcon { background: #b3d9ff; color: #004085; }
-.gender.fille { background: #ffd6e7; color: #85144b; }
-.gender.mixte { background: #eee; color: #444; }
-
-/* ==========================================================================
-   6. UTILITAIRES & MODAL
-   ========================================================================== */
-.page { display: none; }
-.page.active { display: block; animation: fadeIn 0.4s ease; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-#imageModal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  z-index: 9999;
-  padding: 20px;
-}
-
-.footer {
-  text-align: center;
-  font-size: 13px;
-  opacity: 0.6;
-  margin-top: 30px;
-  padding-bottom: 20px;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LABYRINTH OS - ULTRA COLOR</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-<div class="app">
-  <!-- Page 1: Démarrage -->
-  <div id="page1" class="page active">
-    <h1>Petit Nous</h1>
-    <div class="subtitle">
-      Chaque histoire commence quelque part 🤍
-    </div>
 
-    <div class="card">
+    <canvas id="bg-canvas"></canvas>
 
-      <button class="btn" onclick="saveParentsName()">
-        Commencer l'aventure ✨
-      </button>
-    </div>
+    <div id="main-menu">
+        <header>
+            <h1>LABYRINTH</h1>
+            <p style="color: var(--n-blue); font-size: 10px; letter-spacing: 4px;">SYSTEM_V3.0_ONLINE</p>
+        </header>
 
-    <div class="footer">
-      Un espace intime, juste pour vous.
-    </div>
-  </div>
-
-  <!-- Page 2: Accueil -->
-  <div id="page2" class="page">
-    
-    <button id="themeToggle" class="btn-secondary" style="width: auto; padding: 10px; border-radius: 50%;">
-  🌙
-</button>
-
-    <div class="header">
-      <h1>Petit Nous</h1>
-      <div class="parents-text" id="parentsText">Hugo & Charline attendent leur petit bébé 🥹</div>
-<p style="text-align:center;">Chaque jour nous rapproche de toi</p>    </div>
-
-    <div class="card">
-      <div class="week" id="weekText">Semaine 0</div>
-      <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-<div class="due-date" id="dueDateText">
-  <strong>Terme estimé :</strong> --
-</div>
-
-<div class="weeks-left" id="weeksLeftText">
-  <strong>Encore :</strong> -- semaines 🥰
-</div>
-      <div class="baby-size" id="babySize">Bébé est petit comme une graine 🌱</div>
-      <div class="tip" id="tipText">N'oubliez pas de prendre votre photo hebdo 🤍</div>
-
-<div class="section">
-  <label><strong>Sexe du bébé</strong></label>
-
-  <div class="gender-choice">
-<label class="gender-option boy">
-  <input type="radio" name="babyGender" value="Garçon">
-  <span>👦 Garçon</span>
-</label>
-<label class="gender-option girl">
-  <input type="radio" name="babyGender" value="Fille">
-  <span>👧 Fille</span>
-</label>
-<label class="gender-option neutral">
-  <input type="radio" name="babyGender" value="Surprise">
-  <span>🤍 Surprise</span>
-</label>
-  </div>
-</div>
-
-      <div class="edit-section">
-        <button type="button" onclick="showEdit()">Modifier la date de début</button>
-        <div id="editContainer" style="display:none;">
-          <input type="date" id="editDate" />
-          <button type="button" onclick="updateStartDate()">Valider</button>
+        <div class="menu-grid">
+            <button class="mode-btn btn-normal" onclick="openMode('normal')"><span>🟦</span> MODE NORMAL</button>
+            <button class="mode-btn btn-duo" onclick="openMode('fusion')"><span>👥</span> FUSION DUO</button>
+            <button class="mode-btn btn-rot" onclick="openMode('rotation')"><span>🔄</span> ROTATION</button>
+            <button class="mode-btn btn-ecl" onclick="openMode('eclipse')"><span>👁️</span> ÉCLIPSE</button>
+            <button class="mode-btn btn-mouv" onclick="openMode('mouv')"><span>🧩</span> MOUVANT</button>
+            <button class="mode-btn btn-mem" onclick="openMode('mem')"><span>🧠</span> MÉMOIRE</button>
+            <button class="mode-btn btn-coll" onclick="openMode('coll')"><span>💰</span> COLLECTE</button>
+            <button class="mode-btn btn-sent" onclick="openMode('sent')"><span>🛡️</span> SENTINELLE</button>
+            <button class="mode-btn btn-inv" onclick="openMode('inverse')"><span>🪞</span> INVERSÉ</button>
+            <button class="mode-btn btn-ari" onclick="openMode('ariane')"><span>🧶</span> ARIANE</button>
+            <button class="mode-btn btn-tron" onclick="openMode('tron')"><span>⚡</span> TRON</button>
+            <button class="mode-btn btn-zoom" onclick="openMode('zoom')"><span>🔍</span> ZOOM</button>
+            <button class="mode-btn btn-traque" onclick="openMode('traque')"><span>💀</span> TRAQUE</button>
+            <button class="mode-btn" style="--btn-color: #fff;" onclick="alert('LABYRINTH OS v3.0 - Réalisé par Gemini')"><span>⚙️</span> INFOS</button>
         </div>
-      </div>
     </div>
 
-<div class="buttons-container">
-<div class="floating-buttons">
-  <button class="btn" onclick="showPage('page4')">✍️ Ajouter un souvenir</button>
-  <button class="btn btn-secondary" onclick="showPage('page3')">📆 Voir la timeline</button>
-  <button class="btn btn-secondary" onclick="showPage('page5')">📝 Journal de grossesse</button>
-  <button class="btn btn-secondary" onclick="showPage('page6')">📅 Carnet de rendez-vous</button>
-  <button class="btn btn-secondary" onclick="showPage('page7')">📋 Checklist maternité</button> 
-  <button class="btn btn-secondary" onclick="showPage('page8')">👶 Prénoms favoris</button>
-</div>
-</div>
-    <div class="footer">Un jour, tu liras tout ça ❤️</div>
-  </div>
-  
-  <!-- Page 3: Timeline -->
-  <div id="page3" class="page">
-    <button class="back-btn" onclick="showPage('page2')">←</button>
-    
-    <h1>Timeline</h1>
-    <div id="timeline"></div>
-  </div>
-
-  <!-- Page 4: Souvenirs -->
-  <div id="page4" class="page">
-    <button class="back-btn" onclick="showPage('page2')">←</button>
-    
-    <div class="header">
-      <h1>Petit Nous</h1>
-      <div class="parents-text" id="souvenirParentsText">Hugo & Charline créent leurs souvenirs 🥹</div>
-      <p>Chaque moment compte 💛</p>
-    </div>
-
-    <div class="card">
-      <div class="add-souvenir">
-        <input id="souvenirText" placeholder="Écris ton souvenir">
-        <input id="souvenirDate" type="date">
-        <input id="babySizeInput" type="number" placeholder="Taille bébé (cm)">
-        <input id="souvenirPhoto" type="file" accept="image/*">
-        <div id="photoPreview"></div>
-        <button id="addButton">Ajouter le souvenir</button>
-      </div>
-
-      <button id="toggleButton" class="btn btn-secondary" style="margin-top:12px;">Lire les souvenirs</button>
-      <button id="saveButton" class="btn" style="margin-top:12px;">Enregistrer sélection</button>
-
-      <div id="souvenirList" class="souvenir-list"></div>
-    </div>
-
-    <!-- MODAL -->
-    <div id="imageModal">
-      <div>
-        <img id="modalImage">
-        <div>
-          <button id="closeModal">Fermer</button>
+    <div id="game-ui" class="game-mode" style="display: none;">
+        <div class="stats-bar" id="ui-bar">
+            <button class="ui-btn" onclick="quitGame()">RETOUR</button>
+            <div id="ui-timer">00:00.0</div>
+            <div id="status-text" style="font-size: 10px; opacity: 0.8;">INITIALISATION...</div>
+            <button class="ui-btn" onclick="toggleSettings()">⚙️</button>
         </div>
-      </div>
+
+        <div class="game-container" id="game-zone">
+            <canvas id="game-canvas"></canvas>
+            
+            <div id="joy-base" class="joystick-base">
+                <div id="joy-stick" class="joystick-stick"></div>
+            </div>
+
+            <div id="ammo-display" style="display: none;">
+                MUNITIONS : <span id="ammo-count">0</span>
+            </div>
+
+            <div id="shoot-controls" style="display: none; position: absolute; bottom: 30px; right: 30px; grid-template-columns: repeat(3, 60px); gap: 15px; z-index: 9999;">
+                <div></div>
+                <button onmousedown="handleShoot(0, -1)" ontouchstart="handleShoot(0, -1)" 
+                    style="width: 60px; height: 60px; background: rgba(0,0,0,0.6); border: 2px solid var(--bar-color); color: white; border-radius: 10px; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 20px;">▲</button>
+                <div></div>
+                
+                <button onmousedown="handleShoot(-1, 0)" ontouchstart="handleShoot(-1, 0)" 
+                    style="width: 60px; height: 60px; background: rgba(0,0,0,0.6); border: 2px solid var(--bar-color); color: white; border-radius: 10px; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 20px;">◀</button>
+                <button onmousedown="handleShoot(0, 1)" ontouchstart="handleShoot(0, 1)" 
+                    style="width: 60px; height: 60px; background: rgba(0,0,0,0.6); border: 2px solid var(--bar-color); color: white; border-radius: 10px; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 20px;">▼</button>
+                <button onmousedown="handleShoot(1, 0)" ontouchstart="handleShoot(1, 0)" 
+                    style="width: 60px; height: 60px; background: rgba(0,0,0,0.6); border: 2px solid var(--bar-color); color: white; border-radius: 10px; pointer-events: auto; display: flex; align-items: center; justify-content: center; font-size: 20px;">▶</button>
+            </div>
+        </div>
+
+        <div id="overlay-win" class="overlay">
+            <div class="modal">
+                <h2 id="win-title">SUCCÈS</h2>
+                <button class="action-btn" onclick="nextLevel()">NIVEAU SUIVANT</button>
+                <button class="action-btn" onclick="quitGame()">MENU</button>
+            </div>
+        </div>
+
+<div id="settings-modal" class="overlay">
+    <div class="modal">
+        <h2>CENTRE DE PROGRESSION</h2>
+        <p>Sélectionnez un secteur :</p>
+        
+        <div id="levels-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0;">
+        </div>
+
+        <button class="action-btn" onclick="hardResetProgression()" style="color: var(--n-red); font-size: 10px; border-color: var(--n-red);">RÉINITIALISER MÉMOIRE</button>
+        
+        <button class="action-btn" onclick="closeSettings()" style="margin-top:20px; border-color: #666; color: #999;">FERMER</button>
     </div>
-  </div>
+</div>
 
-  <!-- Page 5: Journal -->
-  <div id="page5" class="page">
-    <button class="back-btn" onclick="showPage('page2')">←</button>
-    
-    <h1>📝 Journal de grossesse</h1>
-
-    <div class="note-card">
-      <label for="note">Notes libres :</label>
-      <textarea id="note" placeholder="Écris ce que vous ressentez..."></textarea>
-
-      <label for="date">Date :</label>
-      <input type="date" id="journalDate">
-
-      <label for="emotion">Niveau d'émotion :</label>
-      <select id="emotion">
-        <option value="">-- Choisir --</option>
-        <option value="😍">😍 Très heureux(se)</option>
-        <option value="😊">😊 Heureux(se)</option>
-        <option value="😐">😐 Neutre</option>
-        <option value="😟">😟 Un peu inquiet(e)</option>
-        <option value="😢">😢 Triste</option>
-      </select>
-
-      <label for="author">Auteur :</label>
-      <select id="author">
-        <option value="">-- Choisir --</option>
-        <option value="Hugo">Hugo</option>
-        <option value="Charline">Charline</option>
-        <option value="Nous deux">Nous deux</option>
-      </select>
-
-      <button id="saveNote">Ajouter au journal</button>
+        <div id="ui-arrows" class="arrow-controls" style="display: none;">
+            <div class="dir-btn" style="grid-column: 2;" ontouchstart="handleInput('up')">▲</div>
+            <div class="dir-btn" style="grid-column: 1; grid-row: 2;" ontouchstart="handleInput('left')">◀</div>
+            <div class="dir-btn" style="grid-column: 3; grid-row: 2;" ontouchstart="handleInput('right')">▶</div>
+            <div class="dir-btn" style="grid-column: 2; grid-row: 3;" ontouchstart="handleInput('down')">▼</div>
+        </div>
     </div>
-
-    <div id="journal"></div>
-
-    <div class="footer">Chaque émotion compte 🤍</div>
-  </div>
-  
-  <!-- Page 6: Carnet de rendez-vous -->
-<div id="page6" class="page">
-  <button class="back-btn" onclick="showPage('page2')">←</button>
-  
-  <h1>📅 Carnet de rendez-vous</h1>
-
-  <div class="note-card">
-    <label for="rdvDate">Date :</label>
-    <input type="date" id="rdvDate">
-
-    <label for="rdvTime">Heure :</label>
-    <input type="time" id="rdvTime">
-
-<select id="rdvType">
-  <option value="">-- Choisir le type --</option>
-
-  <optgroup label="🩺 Suivi médical">
-    <option>Consultation médicale</option>
-    <option>Échographie</option>
-    <option>Analyse / prise de sang</option>
-    <option>Vaccination</option>
-    <option>Suivi sage-femme</option>
-  </optgroup>
-
-  <optgroup label="🧠 Bien-être">
-    <option>Préparation à l'accouchement</option>
-    <option>Psychologue</option>
-    <option>Ostéopathe / Kiné</option>
-  </optgroup>
-
-  <optgroup label="🏥 Administratif">
-    <option>Rendez-vous maternité</option>
-    <option>Démarches administratives</option>
-  </optgroup>
-
-  <optgroup label="👶 Après naissance">
-    <option>Suivi pédiatrique</option>
-    <option>Contrôle post-natal maman</option>
-  </optgroup>
-
-  <option>⭐ Autre</option>
-</select>
-
-    <label for="rdvNote">Notes :</label>
-    <textarea id="rdvNote" placeholder="Écris les infos importantes..."></textarea>
-
-    <button id="saveRdv">Ajouter le rendez-vous</button>
-  </div>
-
-  <div id="rdvList"></div>
-</div>
-
-<!-- Page 7: Checklist maternité -->
-<div id="page7" class="page">
-  <button class="back-btn" onclick="showPage('page2')">←</button>
-
-  <h1>📋 Checklist maternité</h1>
-
-  <div class="card">
-    <!-- Formulaire d'ajout -->
-    <div class="add-checklist">
-      <input type="text" id="checklistInput" placeholder="Ajouter un item...">
-
-      <select id="checklistCategory">
-        <option value="">-- Choisir une catégorie --</option>
-        <option value="Vêtements bébé">Vêtements bébé</option>
-        <option value="Accessoires">Accessoires</option>
-        <option value="Hygiène">Hygiène</option>
-        <option value="Autre">Autre...</option>
-      </select>
-
-      <input type="text" id="checklistCustomCategory" placeholder="Écris ta catégorie" style="display:none;">
-
-      <button id="addChecklistBtn" class="btn">Ajouter</button>
-    </div>
-
-    <!-- Container pour afficher les items -->
-    <div id="checklistContainer" style="margin-top:16px;"></div>
-  </div>
-</div>
-
-<!-- PAGE 8 : Prénoms favoris -->
-<div id="page8" class="page">
-  <button class="back-btn" onclick="showPage('page2')">←</button>
-  <h1>👶 Liste de prénoms</h1>
-
-  <!-- Ajout prénom -->
-  <div class="add-prenom">
-    <input type="text" id="prenomInput" placeholder="Écris un prénom...">
-    <select id="prenomGenre">
-      <option value="mixte">Mixte</option>
-      <option value="garcon">Garçon</option>
-      <option value="fille">Fille</option>
-    </select>
-    <button id="addPrenomBtn" class="btn">Ajouter</button>
-  </div>
-
-  <!-- Filtres -->
-  <div class="filter-prenom" style="margin-top:12px;">
-    <button class="btn btn-secondary" data-filter="all">Tous</button>
-    <button class="btn btn-secondary" data-filter="garcon">Garçon</button>
-    <button class="btn btn-secondary" data-filter="fille">Fille</button>
-    <button class="btn btn-secondary" data-filter="mixte">Mixte</button>
-    <button class="btn btn-secondary" data-filter="fav">⭐ Favoris</button>
-  </div>
-
-  <!-- Liste des prénoms -->
-  <div id="prenomContainer" style="margin-top:16px;"></div>
-</div>
-
-<script>
-// ==========================================================================
-// LOCALSTORAGE - AJOUTÉ SANS MODIFIER LE CODE EXISTANT
-// ==========================================================================
-
-// Fonction pour sauvegarder toutes les données dans localStorage
-function saveAllData() {
-  try {
-    const appData = {
-      // Données de base
-      startDate: storedStartDate,
-      parentsName: parentsName,
-      babyGender: babyGender,
-      
-      // Collections
-      souvenirs: souvenirs,
-      journalEntries: journalEntries,
-      rdvEntries: rdvEntries,
-      checklistItems: checklistItems,
-      prenoms: prenoms,
-      
-      // Thème
-      theme: document.documentElement.getAttribute('data-theme') || 'light',
-      
-      // Date de dernière sauvegarde
-      lastSave: new Date().toISOString()
-    };
     
-    localStorage.setItem('petitNousData', JSON.stringify(appData));
-    console.log('Données sauvegardées dans localStorage');
-  } catch (error) {
-    console.error('Erreur lors de la sauvegarde:', error);
-  }
-}
-
-// Fonction pour charger toutes les données depuis localStorage
-function loadAllData() {
-  try {
-    const saved = localStorage.getItem('petitNousData');
-    if (saved) {
-      const appData = JSON.parse(saved);
-      
-      // Données de base
-      storedStartDate = appData.startDate || '';
-      parentsName = appData.parentsName || '';
-      babyGender = appData.babyGender || '';
-      
-      // Collections
-      souvenirs = appData.souvenirs || [];
-      journalEntries = appData.journalEntries || [];
-      rdvEntries = appData.rdvEntries || [];
-      checklistItems = appData.checklistItems || [];
-      prenoms = appData.prenoms || [];
-      
-      // Thème
-      if (appData.theme === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        themeToggle.textContent = '☀️';
-      }
-      
-      console.log('Données chargées depuis localStorage');
-      return true;
-    }
-  } catch (error) {
-    console.error('Erreur lors du chargement:', error);
-  }
-  return false;
-}
-
-// Fonctions wrapper pour sauvegarder après chaque modification
-function saveWithStorage(callback) {
-  return function(...args) {
-    const result = callback.apply(this, args);
-    saveAllData();
-    return result;
-  };
-}
-
-// Envelopper les fonctions existantes pour qu'elles sauvegardent automatiquement
-const originalUpdateStartDate = updateStartDate;
-updateStartDate = saveWithStorage(originalUpdateStartDate);
-
-const originalAddSouvenir = addSouvenir;
-addSouvenir = saveWithStorage(originalAddSouvenir);
-
-const originalSaveJournalEntry = saveJournalEntry;
-saveJournalEntry = saveWithStorage(originalSaveJournalEntry);
-
-const originalSaveRdvEntry = saveRdvEntry;
-saveRdvEntry = saveWithStorage(originalSaveRdvEntry);
-
-// ==========================================================================
-// CODE EXISTANT - NON MODIFIÉ
-// ==========================================================================
-
-const themeToggle = document.getElementById('themeToggle');
-const body = document.documentElement; // On applique le thème sur <html>
-
-themeToggle.addEventListener('click', () => {
-  if (body.getAttribute('data-theme') === 'dark') {
-    body.removeAttribute('data-theme');
-    themeToggle.textContent = '🌙';
-  } else {
-    body.setAttribute('data-theme', 'dark');
-    themeToggle.textContent = '☀️';
-  }
-  saveAllData(); // Ajout: sauvegarde du thème
-});
-
-function saveParentsName() {
-  // juste passer à la page 2
-  showPage('page2');
-}
-let babyGender = "";
-
-function formatDateTime(dateStr, timeStr) {
-  const date = new Date(dateStr + "T" + timeStr);
-
-  return date.toLocaleDateString("fr-FR", {
-    day: "numeric",
-    month: "long"
-  }) + " à " + timeStr;
-}
-
-  // Variables globales
-  let currentPage = 'page1';
-  let startDate = null;
-  let souvenirs = [];
-  let editIndex = null;
-  let currentPhoto = null;
-  let journalEntries = [];
-  let parentsName = '';
-  let storedStartDate = '';
-  
-function updateParentsText() {
-  document.getElementById("parentsText").textContent =
-    (parentsName || "Hugo & Charline") + " attendent leur petit miracle 🥹";
-}
-
-  const tips = [
-    "N'oubliez pas de prendre votre photo hebdo 🤍",
-    "Cette semaine, bébé bouge un peu plus ! 💃",
-    "Hydratez-vous bien 💧",
-    "Mangez une portion de fruits supplémentaire 🍎",
-    "Profitez d'un moment calme ensemble 🕊️",
-    "Bébé entend des sons, parlez-lui doucement 🎶",
-    "C'est le moment parfait pour un peu de yoga doux 🧘‍♀️",
-    "Choisissez une chanson spéciale pour bébé 🎵",
-    "Restez actif, même une petite marche fait du bien 🚶‍♂️",
-    "Préparez votre coin cosy pour bébé 🍼"
-  ];
-
-  // Initialisation au chargement
-window.onload = function() {
-    // Charger les données depuis localStorage
-    loadAllData();
-    
-    // Initialiser les écouteurs d'événements une seule fois
-    initSouvenirsPage();
-    initJournalPage();
-    initRdvPage();
-    // On ne lance pas initChecklist ou initPrenoms ici, 
-    // car ils sont lancés par showPage quand on clique sur le bouton.
-    
-// Toujours commencer par la page 1 (pas de données persistantes)
-showPage('page1');
-};
-
-function initGenderChoice() {
-  const radios = document.querySelectorAll('input[name="babyGender"]');
-
-  radios.forEach(radio => {
-    radio.addEventListener("change", () => {
-      babyGender = radio.value;
-      console.log("Sexe choisi :", babyGender);
-      saveAllData(); // Ajout: sauvegarde du sexe
-    });
-  });
-}
-    
-    // Toujours commencer par la page 1 (pas de données persistantes)
-    showPage('page1');
-
-  // Fonctions de navigation
-function showPage(pageId) {
-    // Cacher toutes les pages
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active');
-    });
-
-    // Afficher la page demandée
-    const targetPage = document.getElementById(pageId);
-    if (!targetPage) {
-        console.error("La page avec l'id '" + pageId + "' n'existe pas !");
-        return;
-    }
-    targetPage.classList.add('active');
-    currentPage = pageId;
-
-    // Lancer l'initialisation spécifique à chaque page
-    switch(pageId) {
-        case 'page2':
-            initMainPage();
-            initGenderChoice(); // Ajouté pour le sexe du bébé
-            break;
-        case 'page3':
-            initTimelinePage();
-            break;
-        case 'page4':
-            updateSouvenirParentsText();
-            renderSouvenirList();
-            break;
-        case 'page5':
-            renderJournalEntries();
-            break;
-        case 'page6':
-            renderRdvEntries();
-            break;
-        case 'page7':
-            initChecklistPage(); // Correction ici
-            break;
-        case 'page8':
-            initPrenomsPage(); // Correction ici
-            break;
-    }
-}
-
-// Fonction de retour
-function goBack() {
-    if (currentPage === 'page2') {
-        showPage('page1');
-    } else if (['page3','page4','page5','page6','page7','page8'].includes(currentPage)) {
-        showPage('page2');
-    }
-}
-
-  // Page 2: Accueil principal
-
-function initMainPage() {
-  if (storedStartDate) {
-    startDate = new Date(storedStartDate);
-    document.getElementById("editDate").value = storedStartDate;
-    updatePregnancyInfo();
-  }
-
-  updateParentsText();
-}
-
-  function showEdit() {
-    document.getElementById("editContainer").style.display = "flex";
-  }
-
-  function updateStartDate() {
-    const newDate = document.getElementById("editDate").value;
-    if (!newDate) return alert("Choisis une date 🤍");
-
-    startDate = new Date(newDate);
-    storedStartDate = newDate;
-    document.getElementById("editContainer").style.display = "none";
-    updatePregnancyInfo();
-  }
-
-  function updatePregnancyInfo() {
-    if (!startDate) return;
-
-    const today = new Date();
-    const diffTime = today - startDate;
-    const diffDays = Math.floor(diffTime / (1000*60*60*24));
-    const currentWeek = Math.max(1, Math.floor(diffDays / 7) + 1);
-
-    document.getElementById("weekText").textContent = "Semaine " + currentWeek;
-
-    // Barre de progression
-    const progressPercent = Math.min(100, (currentWeek / 40) * 100);
-    document.getElementById("progressBar").style.width = progressPercent + "%";
-
-    const due = new Date(startDate.getTime() + 280*24*60*60*1000);
-document.getElementById("dueDateText").innerHTML =
-  "<strong>Terme estimé :</strong> " + due.toLocaleDateString('fr-FR');
-    const weeksLeft = Math.max(0, 40 - currentWeek);
-document.getElementById("weeksLeftText").innerHTML =
-  "<strong>Encore :</strong> " + weeksLeft + " semaines 🥰";
-    // Emoji bébé
-const babySize = document.getElementById("babySize");
-if (currentWeek <= 4) babySize.innerHTML = "<strong>Bébé est petit comme une graine 🌱</strong>";
-else if (currentWeek <= 8) babySize.innerHTML = "<strong>Bébé est grand comme une myrtille 🫐</strong>";
-else if (currentWeek <= 12) babySize.innerHTML = "<strong>Bébé est grand comme un kiwi 🥝</strong>";
-else if (currentWeek <= 16) babySize.innerHTML = "<strong>Bébé est grand comme un avocat 🥑</strong>";
-else if (currentWeek <= 20) babySize.innerHTML = "<strong>Bébé est grand comme une banane 🍌</strong>";
-else if (currentWeek <= 24) babySize.innerHTML = "<strong>Bébé est grand comme un épi de maïs 🌽</strong>";
-else if (currentWeek <= 28) babySize.innerHTML = "<strong>Bébé est grand comme une aubergine 🍆</strong>";
-else if (currentWeek <= 32) babySize.innerHTML = "<strong>Bébé est grand comme une courgette 🥒</strong>";
-else if (currentWeek <= 36) babySize.innerHTML = "<strong>Bébé est grand comme une papaye 🥭</strong>";
-else babySize.innerHTML = "<strong>Bébé est presque prêt ! 🍼</strong>";
-
-    // Tip hebdo (cycle sur le tableau)
-    const tipIndex = (currentWeek - 1) % tips.length;
-    document.getElementById("tipText").textContent = tips[tipIndex];
-  }
-
-// ============================
-// Sexe du bébé
-// ============================
-function initGenderChoice() {
-  const radios = document.querySelectorAll('input[name="babyGender"]');
-  radios.forEach(radio=>{
-    radio.addEventListener("change",()=>{
-      babyGender = radio.value;
-      // on applique la couleur via CSS déjà présent (has input:checked)
-      console.log("Sexe choisi :",babyGender);
-    });
-  });
-}
-
-
-  // Page 3: Timeline
-  function initTimelinePage() {
-  const timeline = document.getElementById('timeline');
-  timeline.innerHTML = '';
-
-  if (!startDate) return; // si pas de date de début, ne rien afficher
-
-  const today = new Date();
-  const diffDays = Math.floor((today - startDate) / (1000*60*60*24));
-  const currentWeek = Math.min(40, Math.max(1, Math.floor(diffDays/7)+1));
-
-  // Exemple de tailles pour chaque semaine (cm)
-  const babySizes = [
-    0.1,0.2,0.4,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,
-    22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40
-  ];
-
-  function getEmoji(size){
-    if(size <= 2) return "🌱";
-    if(size <= 5) return "🫐";
-    if(size <= 7) return "🥝";
-    if(size <= 11) return "🥑";
-    if(size <= 16) return "🍌";
-    if(size <= 25) return "🌽";
-    if(size <= 30) return "🍆";
-    if(size <= 35) return "🥒";
-    if(size <= 40) return "🥭";
-    return "🍼";
-  }
-  
-// Mois en mots pour la timeline
-const monthsInWords = [
-  "1 mois",
-  "2 mois",
-  "3 mois",
-  "4 mois",
-  "5 mois",
-  "6 mois",
-  "7 mois",
-  "8 mois",
-  "9 mois"
-];
-
-  for (let week = 1; week <= 40; week++) {
-    const card = document.createElement('div');
-    card.className = 'week-card';
-
-    // Trimestres
-    if (week <= 12) card.classList.add('trimester1');
-    else if (week <= 27) card.classList.add('trimester2');
-    else card.classList.add('trimester3');
-
-    // Affichage du mois seulement au début de chaque mois
-let monthText = "";
-const weekDiff = week - 1; // combien de semaines depuis le début
-const monthIndex = Math.floor(weekDiff / 4.33);
-// Afficher le mois uniquement si c'est la première semaine du mois
-if (weekDiff % 4.33 < 1 && monthIndex < monthsInWords.length) {
-    monthText = monthsInWords[monthIndex];
-}
-
-    const size = babySizes[week-1];
-    const emoji = getEmoji(size);
-
-    // Couleur selon la semaine
-    if (week < currentWeek) {
-      card.style.background = "rgba(233,168,155,0.8)"; // déjà passée
-    } else if (week === currentWeek) {
-      card.style.background = "rgba(233,168,155,1)"; // semaine actuelle
-      card.style.color = "#fff";
-    } else {
-      card.style.background = "rgba(255,255,255,0.75)"; // futur
-    }
-
-    card.innerHTML = `<div class="week-number">Semaine ${week}</div>
-                      <div class="week-month">${monthText}</div>
-                      <div class="week-size">${size} cm ${emoji}</div>`;
-    timeline.appendChild(card);
-  }
-}
-  // Page 4: Souvenirs
-  function initSouvenirsPage() {
-    const souvenirPhoto = document.getElementById("souvenirPhoto");
-    const photoPreview = document.getElementById("photoPreview");
-    const addButton = document.getElementById("addButton");
-    const toggleButton = document.getElementById("toggleButton");
-    const saveButton = document.getElementById("saveButton");
-    
-    souvenirPhoto.onchange = () => {
-      const file = souvenirPhoto.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        currentPhoto = e.target.result;
-        photoPreview.innerHTML = `<img src="${currentPhoto}">`;
-      };
-      reader.readAsDataURL(file);
-    };
-
-    addButton.onclick = addSouvenir;
-    toggleButton.onclick = toggleSouvenirList;
-    saveButton.onclick = saveSouvenirsSelection;
-    
-    // Pas de chargement depuis localStorage
-  }
-
-  function updateSouvenirParentsText() {
-    document.getElementById("souvenirParentsText").textContent = (parentsName || "Hugo & Charline") + " créent leurs souvenirs 🥹";
-  }
-
-  function sizeToEmoji(size){
-    if(!size) return '';
-    if(size < 20) return '🍓';
-    if(size < 30) return '🍐';
-    if(size < 40) return '🍊';
-    return '👶';
-  }
-
-function renderSouvenirList() {
-  const souvenirList = document.getElementById("souvenirList");
-  souvenirList.innerHTML = "";
-
-  souvenirs.forEach((s,index)=>{
-    const div = document.createElement("div");
-    div.className = "souvenir";
-
-    // Photo du souvenir
-    if(s.photo){
-      const img = document.createElement("img");
-      img.src = s.photo;
-      div.appendChild(img);
-    }
-
-    // Label + checkbox
-    const label = document.createElement("label");
-    label.style.display = "flex";
-    label.style.alignItems = "center";
-    label.style.gap = "10px";
-    label.style.flex = "1";
-    label.style.padding = "8px";
-    label.style.borderRadius = "14px";
-    label.style.transition = "0.2s";
-    label.style.cursor = "pointer";
-
-    const check = document.createElement("input");
-    check.type = "checkbox";
-    check.dataset.index = index;
-
-    // Quand coché → on change le style du label
-    check.addEventListener("change", () => {
-      if(check.checked){
-        label.style.background = "rgba(233,168,155,0.3)";
-      } else {
-        label.style.background = "transparent";
-      }
-    });
-
-    const span = document.createElement("span");
-    span.innerHTML = `${s.text} <div style="font-size:12px;opacity:.7">Taille : ${s.size || "?"} cm ${sizeToEmoji(s.size)}</div>
-                      <div style="font-size:12px;opacity:.6">${s.date}</div>`;
-
-    label.appendChild(check);
-    label.appendChild(span);
-    div.appendChild(label);
-
-    // Actions (Modifier/Supprimer)
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    const edit = document.createElement("button");
-    edit.textContent = "Modifier";
-    edit.className = "edit";
-    edit.onclick = () => {
-      document.getElementById("souvenirText").value = s.text;
-      document.getElementById("souvenirDate").value = s.date;
-      document.getElementById("babySizeInput").value = s.size || "";
-      currentPhoto = s.photo;
-      document.getElementById("photoPreview").innerHTML = s.photo ? `<img src="${s.photo}">` : "";
-      document.getElementById("addButton").textContent = "Mettre à jour";
-      editIndex = index;
-    };
-
-    const del = document.createElement("button");
-    del.textContent = "Supprimer";
-    del.className = "delete";
-    del.onclick = () => {
-      if(confirm("Supprimer ce souvenir ?")){
-        souvenirs.splice(index,1);
-        renderSouvenirList();
-        saveAllData(); // Ajout: sauvegarde après suppression
-      }
-    };
-
-    actions.append(edit, del);
-    div.appendChild(actions);
-
-    // Ajout au DOM
-    souvenirList.appendChild(div);
-  });
-}
-
-  function addSouvenir() {
-    const souvenirText = document.getElementById("souvenirText").value;
-    const souvenirDate = document.getElementById("souvenirDate").value;
-    const babySizeInput = document.getElementById("babySizeInput").value;
-
-    if(!souvenirText || !souvenirDate) return alert("Remplis tout 🤍");
-
-    const data = {
-      text: souvenirText,
-      date: souvenirDate,
-      size: babySizeInput,
-      photo: currentPhoto
-    };
-
-    if(editIndex !== null){
-      souvenirs[editIndex] = data;
-      editIndex = null;
-      document.getElementById("addButton").textContent = "Ajouter le souvenir";
-    } else {
-      souvenirs.push(data);
-    }
-
-    // Réinitialiser les champs
-    document.getElementById("souvenirText").value = "";
-    document.getElementById("souvenirDate").value = "";
-    document.getElementById("babySizeInput").value = "";
-    document.getElementById("souvenirPhoto").value = "";
-    document.getElementById("photoPreview").innerHTML = "";
-    currentPhoto = null;
-
-    renderSouvenirList();
-  }
-
-  function toggleSouvenirList() {
-    const souvenirList = document.getElementById("souvenirList");
-    souvenirList.style.display =
-      souvenirList.style.display === "block" ? "none" : "block";
-  }
-
-  async function saveSouvenirsSelection() {
-    const selected = Array.from(
-      document.getElementById("souvenirList").querySelectorAll("input[type=checkbox]:checked")
-    );
-
-    if (!selected.length) return alert("Sélectionne au moins un souvenir 🤍");
-
-    const exportBox = document.createElement("div");
-    exportBox.style.position = "fixed";
-    exportBox.style.top = "-9999px";
-    exportBox.style.width = "360px";
-    exportBox.style.padding = "20px";
-    exportBox.style.background = "#fff";
-
-    selected.forEach(cb => {
-      const s = souvenirs[cb.dataset.index];
-      const block = document.createElement("div");
-      block.style.marginBottom = "16px";
-      block.style.border = "1px solid #ddd";
-      block.style.borderRadius = "12px";
-      block.style.padding = "12px";
-
-      if(s.photo){
-        const img = document.createElement("img");
-        img.src = s.photo;
-        img.style.width = "100%";
-        img.style.borderRadius = "10px";
-        img.style.marginBottom = "8px";
-        block.appendChild(img);
-      }
-
-      block.innerHTML += `
-        <div>${s.text}</div>
-        <div style="font-size:13px;opacity:.7">Taille : ${s.size || "?"} cm ${sizeToEmoji(s.size)}</div>
-        <div style="font-size:12px;opacity:.6">${s.date}</div>
-      `;
-      exportBox.appendChild(block);
-    });
-
-    document.body.appendChild(exportBox);
-    const canvas = await html2canvas(exportBox,{scale:2,backgroundColor:"#fff"});
-    document.body.removeChild(exportBox);
-
-    const imgData = canvas.toDataURL("image/jpeg",1.0);
-    document.getElementById("modalImage").src = imgData;
-    document.getElementById("imageModal").style.display = "block";
-  }
-
-  function downloadImage() {
-    const imgData = document.getElementById("modalImage").src;
-    const a = document.createElement("a");
-    a.href = imgData;
-    a.download = "souvenirs.jpeg";
-    a.click();
-  }
-  
-  // Fermer le modal
-document.getElementById("closeModal").addEventListener("click", () => {
-  document.getElementById("imageModal").style.display = "none";
-});
-
-  // Page 5: Journal
-  function initJournalPage() {
-    const saveButton = document.getElementById("saveNote");
-    saveButton.addEventListener("click", saveJournalEntry);
-    
-    // Pas de chargement depuis localStorage
-    renderJournalEntries();
-  }
-
-  function saveJournalEntry() {
-    const noteInput = document.getElementById("note");
-    const dateInput = document.getElementById("journalDate");
-    const emotionSelect = document.getElementById("emotion");
-    const authorSelect = document.getElementById("author");
-    const journal = document.getElementById("journal");
-
-    if(!noteInput.value || !dateInput.value || !authorSelect.value) {
-      alert("Remplis la note, la date et l'auteur 🤍");
-      return;
-    }
-
-    const newEntry = {
-      date: dateInput.value,
-      emotion: emotionSelect.value,
-      author: authorSelect.value,
-      text: noteInput.value,
-      id: Date.now()
-    };
-
-    journalEntries.push(newEntry);
-
-    const noteCard = createNoteCard(newEntry);
-    journal.prepend(noteCard);
-
-    // Reset
-    noteInput.value = "";
-    dateInput.value = "";
-    emotionSelect.value = "";
-    authorSelect.value = "";
-  }
-
-  function createNoteCard(entry) {
-    const noteCard = document.createElement("div");
-    noteCard.className = "note-card";
-    noteCard.dataset.id = entry.id;
-
-    noteCard.innerHTML = `
-      <div><strong>Date :</strong> <span class="date-text">${entry.date}</span></div>
-      <div><strong>Émotion :</strong> <span class="emotion-text">${entry.emotion || "--"}</span></div>
-      <div><strong>Auteur :</strong> <span class="author-text">${entry.author}</span></div>
-      <div class="note-text">${entry.text}</div>
-      <div class="actions">
-        <button class="edit">Modifier</button>
-        <button class="delete">Supprimer</button>
-      </div>
-    `;
-
-    // Supprimer
-    noteCard.querySelector(".delete").addEventListener("click", () => {
-      journalEntries = journalEntries.filter(e => e.id !== entry.id);
-      noteCard.remove();
-      saveAllData(); // Ajout: sauvegarde après suppression
-    });
-
-    // Modifier
-    noteCard.querySelector(".edit").addEventListener("click", () => {
-      document.getElementById("note").value = noteCard.querySelector(".note-text").innerText;
-      document.getElementById("journalDate").value = noteCard.querySelector(".date-text").innerText;
-      document.getElementById("emotion").value = noteCard.querySelector(".emotion-text").innerText;
-      document.getElementById("author").value = noteCard.querySelector(".author-text").innerText;
-
-      journalEntries = journalEntries.filter(e => e.id !== entry.id);
-      noteCard.remove();
-      saveAllData(); // Ajout: sauvegarde après modification
-    });
-
-    return noteCard;
-  }
-
-  function renderJournalEntries() {
-    const journal = document.getElementById("journal");
-    journal.innerHTML = "";
-    
-    // Trier par date (plus récent d'abord)
-    journalEntries.sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    journalEntries.forEach(entry => {
-      const noteCard = createNoteCard(entry);
-      journal.appendChild(noteCard);
-    });
-  }
-  
-  // ============================
-// Page 6: Carnet de rendez-vous
-// ============================
-
-// Tableau pour stocker les rendez-vous
-let rdvEntries = [];
-
-// Initialisation de la page rendez-vous (Page 6)
-function initRdvPage() {
-  // Bouton "Ajouter le rendez-vous"
-  const saveBtn = document.getElementById("saveRdv");
-  saveBtn.addEventListener("click", saveRdvEntry);
-
-  // Afficher les rendez-vous existants (vide au départ)
-  renderRdvEntries();
-}
-
-// Fonction pour ajouter ou modifier un rendez-vous
-function saveRdvEntry() {
-  const date = document.getElementById("rdvDate").value;       // Date du rendez-vous
-  const time = document.getElementById("rdvTime").value;       // Heure
-  const type = document.getElementById("rdvType").value;       // Type (Consultation, Échographie, etc.)
-  const note = document.getElementById("rdvNote").value;       // Notes supplémentaires
-
-  // Vérification des champs obligatoires
-  if(!date || !time || !type) return alert("Remplis au moins la date, l'heure et le type 🤍");
-
-  // Création de l'objet rendez-vous
-  const newEntry = {
-    id: Date.now(), // identifiant unique
-    date,
-    time,
-    type,
-    note
-  };
-
-  // Ajouter au tableau
-  rdvEntries.push(newEntry);
-
-  // Réinitialiser les champs du formulaire
-  document.getElementById("rdvDate").value = "";
-  document.getElementById("rdvTime").value = "";
-  document.getElementById("rdvType").value = "";
-  document.getElementById("rdvNote").value = "";
-
-  // Réafficher la liste
-  renderRdvEntries();
-}
-
-// Fonction pour afficher tous les rendez-vous
-function renderRdvEntries() {
-  const container = document.getElementById("rdvList");
-  container.innerHTML = ""; // vider la liste avant affichage
-
-  // Trier par date et heure
-  rdvEntries.sort((a,b) => new Date(a.date + " " + a.time) - new Date(b.date + " " + b.time));
-
-  // Boucle sur chaque rendez-vous
-  rdvEntries.forEach(entry => {
-    const card = document.createElement("div");
-    card.className = "note-card"; // style identique au journal
-    card.dataset.id = entry.id;
-
-    card.innerHTML = `
-<div>
-  <strong>${formatDateTime(entry.date, entry.time)}</strong> – ${entry.type}
-</div>
-      <div>${entry.note || ""}</div>
-      <div class="actions">
-        <button class="edit">Modifier</button>
-        <button class="delete">Supprimer</button>
-      </div>
-    `;
-
-    // -------------------------
-    // Bouton Supprimer
-    // -------------------------
-    card.querySelector(".delete").addEventListener("click", () => {
-      // Retirer l'entrée du tableau
-      rdvEntries = rdvEntries.filter(e => e.id !== entry.id);
-      // Réafficher la liste
-
-      renderRdvEntries();
-      saveAllData(); // Ajout: sauvegarde après suppression
-    });
-
-    // -------------------------
-    // Bouton Modifier
-    // -------------------------
-    card.querySelector(".edit").addEventListener("click", () => {
-      // Remplir le formulaire avec les infos du rendez-vous
-      document.getElementById("rdvDate").value = entry.date;
-      document.getElementById("rdvTime").value = entry.time;
-      document.getElementById("rdvType").value = entry.type;
-      document.getElementById("rdvNote").value = entry.note;
-
-      // Supprimer l'ancien rendez-vous pour éviter doublons
-      rdvEntries = rdvEntries.filter(e => e.id !== entry.id);
-      renderRdvEntries();
-      saveAllData(); // Ajout: sauvegarde après modification
-    });
-
-    // Ajouter la carte au DOM
-    container.appendChild(card);
-  });
-}
-function initGenderChoice() {
-  const radios = document.querySelectorAll('input[name="babyGender"]');
-
-  radios.forEach(radio => {
-    radio.addEventListener("change", () => {
-      babyGender = radio.value;
-      updateParentsText();
-    });
-  });
-}
-
-// ============================
-// Page 7: Checklist maternité
-// ============================
-
-// Tableau pour stocker les items
-let checklistItems = [];
-let editChecklistIndex = null;
-
-function initChecklistPage() {
-  const checklistContainer = document.getElementById("checklistContainer");
-  const checklistInput = document.getElementById("checklistInput");
-  const addChecklistBtn = document.getElementById("addChecklistBtn");
-  const categorySelect = document.getElementById("checklistCategory");
-  const customCategoryInput = document.getElementById("checklistCustomCategory");
-
-  // Afficher le champ "Autre" si sélectionné
-  categorySelect.addEventListener("change", () => {
-    if (categorySelect.value === "Autre") {
-      customCategoryInput.style.display = "block";
-    } else {
-      customCategoryInput.style.display = "none";
-      customCategoryInput.value = "";
-    }
-  });
-
-  // Ajouter ou modifier un item
-  addChecklistBtn.addEventListener("click", () => {
-    const text = checklistInput.value.trim();
-    let category = categorySelect.value;
-
-    if (!text) return alert("Écris un item 🤍");
-
-    if (category === "Autre") {
-      category = customCategoryInput.value.trim();
-      if (!category) return alert("Écris une catégorie 🤍");
-    }
-
-    if (!category) category = "Non catégorisé";
-
-    if (editChecklistIndex !== null) {
-      checklistItems[editChecklistIndex] = { text, category, done: checklistItems[editChecklistIndex].done };
-      editChecklistIndex = null;
-      addChecklistBtn.textContent = "Ajouter";
-    } else {
-      checklistItems.push({ text, category, done: false });
-    }
-
-    checklistInput.value = "";
-    categorySelect.value = "";
-    customCategoryInput.value = "";
-    customCategoryInput.style.display = "none";
-
-    renderChecklist();
-    saveAllData(); // Ajout: sauvegarde après modification
-  });
-
-  renderChecklist();
-}
-
-// Fonction pour afficher les items de la checklist
-function renderChecklist() {
-  const checklistContainer = document.getElementById("checklistContainer");
-  if (!checklistContainer) return;
-  
-  checklistContainer.innerHTML = "";
-
-  checklistItems.forEach((item, index) => {
-    const div = document.createElement("div");
-    div.className = "week-card";
-    div.style.display = "flex";
-    div.style.alignItems = "center";
-    div.style.justifyContent = "space-between";
-    div.style.marginBottom = "8px";
-    div.style.padding = "8px";
-    div.style.borderRadius = "14px";
-    div.style.background = "rgba(255,255,255,0.85)";
-
-    // Partie checkbox + texte
-    const leftDiv = document.createElement("div");
-    leftDiv.style.display = "flex";
-    leftDiv.style.alignItems = "center";
-    leftDiv.style.gap = "10px";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = item.done;
-
-    const span = document.createElement("span");
-    span.textContent = `[${item.category}] ${item.text}`;
-    if (item.done) span.style.textDecoration = "line-through";
-
-    checkbox.addEventListener("change", () => {
-      item.done = checkbox.checked;
-      span.style.textDecoration = item.done ? "line-through" : "none";
-      saveAllData(); // Ajout: sauvegarde après changement d'état
-    });
-
-    leftDiv.appendChild(checkbox);
-    leftDiv.appendChild(span);
-
-    // Partie boutons Modifier / Supprimer
-    const actions = document.createElement("div");
-    actions.style.display = "flex";
-    actions.style.gap = "6px";
-
-    const editBtn = document.createElement("button");
-    editBtn.textContent = "Modifier";
-    editBtn.className = "btn btn-secondary";
-    editBtn.style.padding = "6px 10px";
-    editBtn.style.fontSize = "13px";
-    editBtn.addEventListener("click", () => {
-      const checklistInput = document.getElementById("checklistInput");
-      const categorySelect = document.getElementById("checklistCategory");
-      const customCategoryInput = document.getElementById("checklistCustomCategory");
-      const addChecklistBtn = document.getElementById("addChecklistBtn");
-      
-      checklistInput.value = item.text;
-      categorySelect.value = item.category !== "Non catégorisé" ? item.category : "Autre";
-      if (item.category === "Autre") {
-        customCategoryInput.style.display = "block";
-        customCategoryInput.value = item.category;
-      }
-      addChecklistBtn.textContent = "Mettre à jour";
-      editChecklistIndex = index;
-    });
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "Supprimer";
-    delBtn.className = "btn btn-secondary";
-    delBtn.style.padding = "6px 10px";
-    delBtn.style.fontSize = "13px";
-    delBtn.addEventListener("click", () => {
-      if (confirm("Supprimer cet item ?")) {
-        checklistItems.splice(index, 1);
-        renderChecklist();
-        saveAllData(); // Ajout: sauvegarde après suppression
-      }
-    });
-
-    actions.append(editBtn, delBtn);
-
-    div.appendChild(leftDiv);
-    div.appendChild(actions);
-    checklistContainer.appendChild(div);
-  });
-}
-
-// ============================
-// Page 8: Prénoms favoris
-// ============================
-
-let prenoms = [];
-
-function initPrenomsPage() {
-  const prenomInput = document.getElementById("prenomInput");
-  const prenomGenre = document.getElementById("prenomGenre");
-  const addPrenomBtn = document.getElementById("addPrenomBtn");
-  const prenomContainer = document.getElementById("prenomContainer");
-
-  addPrenomBtn.addEventListener("click", () => {
-    const text = prenomInput.value.trim();
-    const genre = prenomGenre.value;
-
-    if (!text) return alert("Écris un prénom 🤍");
-
-    prenoms.push({ text, genre, fav: false });
-    prenomInput.value = "";
-    prenomGenre.value = "mixte";
-    renderPrenoms();
-    saveAllData(); // Ajout: sauvegarde après ajout
-  });
-
-  // Filtres
-  const filterButtons = document.querySelectorAll(".filter-prenom .btn");
-  filterButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const filter = btn.dataset.filter;
-      renderPrenoms(filter);
-    });
-  });
-
-  renderPrenoms();
-}
-
-function renderPrenoms(filter = "all") {
-  const prenomContainer = document.getElementById("prenomContainer");
-  if (!prenomContainer) return;
-  
-  prenomContainer.innerHTML = "";
-  
-  prenoms.forEach((p, index) => {
-    if (filter === "fav" && !p.fav) return;
-    if (filter !== "all" && filter !== "fav" && p.genre !== filter) return;
-
-    const div = document.createElement("div");
-    div.className = "prenom-item";
-
-    const info = document.createElement("div");
-    info.className = "info";
-
-    const spanText = document.createElement("span");
-    spanText.textContent = p.text;
-
-    const spanGender = document.createElement("span");
-    spanGender.className = "gender " + p.genre;
-    spanGender.textContent = p.genre === "garcon" ? "Garçon" : 
-                           p.genre === "fille" ? "Fille" : "Mixte";
-
-    info.appendChild(spanText);
-    info.appendChild(spanGender);
-
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    const favBtn = document.createElement("button");
-    favBtn.textContent = "⭐";
-    favBtn.className = "fav";
-    favBtn.addEventListener("click", () => {
-      p.fav = !p.fav;
-      renderPrenoms(filter);
-      saveAllData(); // Ajout: sauvegarde après changement favori
-    });
-
-    const delBtn = document.createElement("button");
-    delBtn.textContent = "🗑️";
-    delBtn.className = "delete";
-    delBtn.addEventListener("click", () => {
-      prenoms.splice(index, 1);
-      renderPrenoms(filter);
-      saveAllData(); // Ajout: sauvegarde après suppression
-    });
-
-    actions.append(favBtn, delBtn);
-
-    div.appendChild(info);
-    div.appendChild(actions);
-    prenomContainer.appendChild(div);
-  });
-}
-
-// ==========================================================================
-// BOUTON DE RÉINITIALISATION (OPTIONNEL) - AJOUTÉ POUR GÉRER LE LOCALSTORAGE
-// ==========================================================================
-
-// Ajouter un bouton pour réinitialiser toutes les données (optionnel)
-function addResetButton() {
-  if (!document.getElementById('resetBtn')) {
-    const resetBtn = document.createElement('button');
-    resetBtn.id = 'resetBtn';
-    resetBtn.textContent = '🔁 Réinitialiser';
-    resetBtn.style.position = 'fixed';
-    resetBtn.style.bottom = '10px';
-    resetBtn.style.right = '10px';
-    resetBtn.style.zIndex = '1000';
-    resetBtn.style.padding = '8px 12px';
-    resetBtn.style.borderRadius = '20px';
-    resetBtn.style.background = '#ff6b6b';
-    resetBtn.style.color = 'white';
-    resetBtn.style.border = 'none';
-    resetBtn.style.fontSize = '12px';
-    resetBtn.style.cursor = 'pointer';
-    
-    resetBtn.addEventListener('click', () => {
-      if (confirm('Voulez-vous vraiment tout réinitialiser ? Toutes les données seront supprimées.')) {
-        localStorage.removeItem('petitNousData');
-        location.reload();
-      }
-    });
-    
-    document.body.appendChild(resetBtn);
-  }
-}
-
-// Appeler cette fonction au chargement si vous voulez le bouton de réinitialisation
-// window.onload = function() { addResetButton(); ... }
-
-</script>
+<button onclick="backToMenu()">Retour</button>
+    <script src="script.js"></script>
 </body>
 </html>
+<style>/* === STYLES GLOBAUX === */
+:root {
+    --n-blue: #00f0ff; 
+    --n-red: #ff003c; 
+    --n-gold: #f1c40f;
+    --n-purple: #9b59b6; 
+    --n-green: #2ecc71; 
+    --n-pink: #ff00ff;
+    --n-orange: #e67e22; 
+    --n-cyan: #00f0ff;
+}
+
+body { 
+    margin: 0; 
+    background: #000; 
+    color: white; 
+    font-family: 'Courier New', monospace; 
+    height: 100vh; 
+    overflow: hidden; 
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none; 
+}
+
+/* Background Canvas */
+#bg-canvas { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    z-index: -1; 
+}
+
+/* === MENU PRINCIPAL === */
+#main-menu {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    width: 100%; 
+    height: 100%; 
+    overflow-y: auto; 
+    position: relative; 
+    z-index: 10;
+    background: radial-gradient(circle at center, rgba(0, 40, 40, 0.3) 0%, #000 90%);
+}
+
+header { text-align: center; padding: 40px 10px; }
+h1 { font-size: 2.5rem; color: #fff; text-shadow: 0 0 15px var(--n-blue); letter-spacing: 8px; margin: 0; }
+
+.menu-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    width: 90%; 
+    max-width: 500px; 
+    padding-bottom: 50px; 
+}
+
+/* Boutons de Mode */
+.mode-btn {
+    --btn-color: var(--n-blue);
+    background: rgba(0, 0, 0, 0.6); 
+    border: 2px solid var(--btn-color);
+    color: var(--btn-color); 
+    padding: 18px 5px; 
+    font-weight: bold; 
+    font-size: 0.85rem;
+    cursor: pointer; 
+    border-radius: 8px; 
+    transition: all 0.2s;
+    text-shadow: 0 0 5px var(--btn-color); 
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 5px var(--btn-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.mode-btn:active { transform: scale(0.92); background: var(--btn-color); color: #000; }
+
+.btn-normal { --btn-color: var(--n-blue); grid-column: span 2; font-size: 1.1rem; }
+.btn-duo { --btn-color: var(--n-purple); }
+.btn-rot { --btn-color: var(--n-green); }
+.btn-ecl { --btn-color: var(--n-pink); }
+.btn-mouv { --btn-color: var(--n-orange); }
+.btn-mem { --btn-color: #3498db; }
+.btn-coll { --btn-color: var(--n-gold); }
+.btn-sent { --btn-color: #95a5a6; }
+.btn-inv { --btn-color: #1abc9c; }
+.btn-ari { --btn-color: #e74c3c; }
+.btn-tron { --btn-color: #f39c12; }
+.btn-zoom { --btn-color: #2ecc71; }
+.btn-traque { --btn-color: var(--n-red); }
+
+/* === INTERFACE DE JEU === */
+.game-mode { 
+    display: none; 
+    width: 100%; 
+    height: 100%; 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    z-index: 100; 
+    flex-direction: column; 
+    background: #000; 
+}
+
+.stats-bar { 
+    background: rgba(0, 10, 10, 0.95); 
+    padding: 10px 15px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid var(--bar-color, var(--n-blue));
+    font-size: 0.9rem;
+    z-index: 110;
+}
+
+.game-container { 
+    position: relative; 
+    flex-grow: 1; 
+    overflow: hidden; 
+    touch-action: none; 
+    background: #000; 
+    z-index: 1;
+}
+
+#game-canvas { 
+    display: block; 
+    width: 100%; 
+    height: 100%; 
+    z-index: 2;
+}
+
+.ui-btn { 
+    background: transparent; 
+    border: 1px solid currentColor; 
+    color: inherit; 
+    padding: 5px 12px; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-family: inherit; 
+}
+
+/* === OVERLAYS (Win / Settings) === */
+.overlay { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background: rgba(0,0,0,0.85); 
+    display: none; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 11000; 
+}
+.modal { 
+    background: #000; 
+    padding: 25px; 
+    border-radius: 10px; 
+    border: 2px solid var(--bar-color, var(--n-blue)); 
+    text-align: center; 
+    width: 80%; 
+    max-width: 300px; 
+    box-shadow: 0 0 20px var(--bar-color);
+}
+
+/* Style uniforme pour les boutons d'action (y compris Progression) */
+.action-btn { 
+    width: 100%; 
+    padding: 12px; 
+    margin-top: 10px; 
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid currentColor; 
+    color: inherit; 
+    cursor: pointer; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 4px;
+}
+
+.action-btn:active {
+    background: white;
+    color: black;
+}
+
+/* === CONTRÔLES JOYSTICK === */
+.joystick-base {
+    position: absolute; 
+    width: 100px; 
+    height: 100px; 
+    background: rgba(0, 240, 255, 0.1);
+    border: 2px solid var(--n-blue); 
+    border-radius: 50%; 
+    display: none; 
+    pointer-events: none; 
+    z-index: 50; 
+    box-shadow: 0 0 15px var(--n-blue);
+}
+.joystick-stick {
+    position: absolute; 
+    width: 40px; 
+    height: 40px; 
+    background: var(--n-blue); 
+    border-radius: 50%;
+    top: 30px; 
+    left: 30px; 
+}
+
+/* === BOUTONS DE TIR === */
+#shoot-controls {
+    display: none; 
+    position: absolute;
+    bottom: 30px;
+    right: 30px; 
+    grid-template-columns: repeat(3, 60px);
+    gap: 15px;
+    z-index: 9999 !important; 
+    pointer-events: none; 
+}
+
+#shoot-controls button {
+    pointer-events: auto !important; 
+    width: 60px;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid var(--bar-color, #ff003c);
+    color: white;
+    border-radius: 10px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#shoot-controls button:active {
+    background: var(--bar-color, #ff003c);
+    transform: scale(0.9);
+}
+
+/* Ammo display */
+#ammo-display {
+    position: absolute; 
+    top: 70px; 
+    right: 20px; 
+    color: white; 
+    font-family: 'Courier New', monospace; 
+    z-index: 100; 
+    pointer-events: none;
+    text-shadow: 0 0 5px #000;
+}
+
+/* === FLÈCHES DIRECTIONNELLES (NETTOYÉES) === */
+.arrow-controls {
+    height: 180px; 
+    background: #050505; 
+    display: none;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px; 
+    padding: 10px; 
+    border-top: 1px solid #333;
+    z-index: 1000;
+}
+.dir-btn { 
+    border: 1px solid #555; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 1.5rem; 
+    color: #fff; 
+    border-radius: 8px; 
+    background: #111; 
+}
+#levels-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 20px 0;
+    max-height: 300px; /* Limite la hauteur de la grille */
+    overflow-y: auto;  /* Ajoute un scroll si trop de niveaux */
+    padding: 10px;
+}
+</style><script>// ==========================================
+// 1. CŒUR DU SYSTÈME (Moteur & Navigation)
+// ==========================================
+
+let currentActiveMode = null;
+let currentMode = null;
+let controlType = 'joystick';
+let startTime = 0;
+let timerInterval = null;
+
+const modeColors = {
+    normal: '#00f0ff', duo: '#9b59b6', rotation: '#2ecc71', eclipse: '#ff00ff',
+    mouv: '#e67e22', mem: '#3498db', coll: '#f1c40f', sent: '#ff003c',
+    inverse: '#1abc9c', ariane: '#e74c3c', tron: '#f39c12', zoom: '#2ecc71', traque: '#ff003c',
+    fusion: '#9b59b6'
+};
+
+// ==========================================
+// 2. SYSTÈME DE PROGRESSION
+// ==========================================
+
+let progression = {
+    unlockedLevels: 1,
+    totalLevels: 12
+};
+
+function loadProgression() {
+    const savedData = JSON.parse(localStorage.getItem('mazeLevels')) || {};
+    let maxLevel = 1;
+    Object.values(savedData).forEach(level => {
+        if (level > maxLevel) maxLevel = level;
+    });
+    progression.unlockedLevels = maxLevel;
+}
+
+function updateProgression() {
+    let state = getActiveState();
+    if (!state) return;
+
+    // Si le niveau que tu viens de finir est le même que ton max débloqué
+    if (state.level === progression.unlockedLevels && progression.unlockedLevels < progression.totalLevels) {
+        progression.unlockedLevels++;
+        saveLevel(currentMode, progression.unlockedLevels);
+        console.log("Nouveau niveau débloqué : " + progression.unlockedLevels);
+    }
+}
+
+function saveLevel(mode, level) {
+    try {
+        let savedData = JSON.parse(localStorage.getItem('mazeLevels')) || {};
+        if (!savedData[mode] || savedData[mode] < level) {
+            savedData[mode] = level;
+            localStorage.setItem('mazeLevels', JSON.stringify(savedData));
+        }
+    } catch (e) {
+        console.error("Erreur lors de la sauvegarde:", e);
+    }
+}
+
+function getLevel(mode) {
+    try {
+        const savedData = JSON.parse(localStorage.getItem('mazeLevels')) || {};
+        return savedData[mode] || 1;
+    } catch (e) {
+        console.error("Erreur lors de la récupération:", e);
+        return 1;
+    }
+}
+
+// ==========================================
+// 3. FONCTIONS GLOBALES
+// ==========================================
+
+function updateUI() {
+    const s = getActiveState();
+    if (!s) return;
+
+    const ammoElem = document.getElementById('ammo-count');
+    if (ammoElem) {
+        if (currentMode === 'sent' && stateSent.ammo !== undefined) {
+            ammoElem.innerText = stateSent.ammo;
+        } else if (currentMode === 'traque' && stateTraque.ammo !== undefined) {
+            ammoElem.innerText = stateTraque.ammo;
+        }
+    }
+
+    const arianeElem = document.getElementById('ariane-percent');
+    if (arianeElem && currentMode === 'ariane') {
+        const percent = Math.floor((stateAriane.foundCount / stateAriane.totalEmpty) * 100) || 0;
+        arianeElem.innerText = percent;
+    }
+}
+
+function generateMaze(size) {
+    let map = Array.from({ length: size }, () => Array(size).fill(1));
+    function walk(x, y) {
+        map[y][x] = 0;
+        let dirs = [[0, 2], [0, -2], [2, 0], [-2, 0]].sort(() => Math.random() - 0.5);
+        for (let [dx, dy] of dirs) {
+            let nx = x + dx, ny = y + dy;
+            if (nx > 0 && nx < size - 1 && ny > 0 && ny < size - 1 && map[ny][nx] === 1) {
+                map[y + dy / 2][x + dx / 2] = 0; 
+                walk(nx, ny);
+            }
+        }
+    }
+    walk(1, 1); 
+    
+    map[size-2][size-2] = 2;
+    map[size-2][size-3] = 0;
+    return map;
+}
+
+function isPathPossible(map, start, size) {
+    let queue = [{x: start.x, y: start.y}];
+    let visited = new Set([`${start.x},${start.y}`]);
+    while(queue.length > 0) {
+        let {x, y} = queue.shift();
+        if(map[y][x] === 2) return true;
+        for(let [dx, dy] of [[0,1],[0,-1],[1,0],[-1,0]]) {
+            let nx = x + dx, ny = y + dy;
+            if(ny >= 0 && ny < size && nx >= 0 && nx < size && map[ny][nx] !== 1 && !visited.has(`${nx},${ny}`)) {
+                visited.add(`${nx},${ny}`);
+                queue.push({x: nx, y: ny});
+            }
+        }
+    }
+    return false;
+}
+
+function mutateMap(s) {
+    let tempMap = s.map.map(row => [...row]);
+    let mutated = false;
+    const intensity = 3 + Math.floor(s.level / 2);
+    for(let i = 0; i < intensity; i++) {
+        let rx = s.player.x + Math.floor(Math.random() * 7) - 3;
+        let ry = s.player.y + Math.floor(Math.random() * 7) - 3;
+        if(rx <= 0 || rx >= s.mapSize-1 || ry <= 0 || ry >= s.mapSize-1) continue;
+        if((rx === s.player.x && ry === s.player.y) || tempMap[ry][rx] === 2) continue;
+        tempMap[ry][rx] = tempMap[ry][rx] === 1 ? 0 : 1;
+        mutated = true;
+    }
+    if(mutated && isPathPossible(tempMap, s.player, s.mapSize)) s.map = tempMap;
+}
+
+// ==========================================
+// 4. LES MODES DE JEU (Logique & Rendu)
+// ==========================================
+
+// --- MODE 01 : NORMAL ---
+let stateNormal = { player: { x: 1, y: 1 }, map: [], mapSize: 11, level: 1, tileSize: 80 };
+
+function initNormal() { 
+    currentMode = 'normal';
+    const savedLevel = getLevel('normal');
+    stateNormal.level = savedLevel || 1; 
+    stateNormal.mapSize = 11; 
+    resetNormal(); 
+}
+
+function resetNormal() {
+    stateNormal.player = { x: 1, y: 1 };
+    stateNormal.mapSize = 11 + ((stateNormal.level - 1) * 2);
+    stateNormal.map = generateMaze(stateNormal.mapSize); 
+    startLevelSystem(); 
+}
+
+function drawNormal(ctx) {
+    const s = stateNormal; 
+    const canvas = document.getElementById('game-canvas');
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    ctx.save(); 
+    ctx.translate(camX, camY);
+    renderMap(ctx, s.map, s.mapSize, s.tileSize, "#003333", "#00f0ff");
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#00f0ff");
+    ctx.restore();
+}
+
+// --- MODE 03 : ROTATION ---
+let stateRotation = { player: { x: 1, y: 1 }, map: [], mapSize: 11, level: 1, tileSize: 80, angle: 0 };
+
+function initRotation() { 
+    currentMode = 'rotation';
+    const savedLevel = getLevel('rotation');
+    stateRotation.level = savedLevel || 1; 
+    stateRotation.mapSize = 11; 
+    resetRotation(); 
+}
+
+function resetRotation() { 
+    stateRotation.player = { x: 1, y: 1 }; 
+    stateRotation.mapSize = 11 + ((stateRotation.level - 1) * 2);
+    stateRotation.map = generateMaze(stateRotation.mapSize); 
+    stateRotation.angle = 0; 
+    startLevelSystem(); 
+}
+
+function drawRotation(ctx) {
+    const s = stateRotation; 
+    const canvas = document.getElementById('game-canvas');
+    if (currentMode === 'rotation') s.angle += 0.008;
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2); 
+    ctx.rotate(s.angle);
+    ctx.translate(-(s.player.x * s.tileSize + s.tileSize / 2), -(s.player.y * s.tileSize + s.tileSize / 2));
+    renderMap(ctx, s.map, s.mapSize, s.tileSize, "#001500", "#2ecc71");
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#2ecc71");
+    ctx.restore();
+}
+
+// --- MODE 04 : ECLIPSE ---
+let stateEclipse = { player: { x: 1, y: 1 }, map: [], mapSize: 11, level: 1, tileSize: 80, flashTimer: 0, flashOpacity: 0 };
+
+function initEclipse() { 
+    currentMode = 'eclipse';
+    const savedLevel = getLevel('eclipse');
+    stateEclipse.level = savedLevel || 1; 
+    stateEclipse.mapSize = 11; 
+    resetEclipse(); 
+}
+
+function resetEclipse() { 
+    stateEclipse.player = { x: 1, y: 1 }; 
+    stateEclipse.mapSize = 11 + ((stateEclipse.level - 1) * 2);
+    stateEclipse.map = generateMaze(stateEclipse.mapSize); 
+    stateEclipse.flashTimer = 0; 
+    startLevelSystem(); 
+}
+
+function drawEclipse(ctx) {
+    const s = stateEclipse; 
+    const canvas = document.getElementById('game-canvas');
+    s.flashTimer += 0.02; 
+    s.flashOpacity = Math.max(0, Math.sin(s.flashTimer) * 2 - 1.3); 
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    ctx.save(); 
+    ctx.translate(camX, camY);
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            const tx = x * s.tileSize, ty = y * s.tileSize;
+            if (s.map[y][x] === 1) {
+                ctx.fillStyle = `rgba(255, 0, 255, ${s.flashOpacity * 0.3})`; 
+                ctx.fillRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4);
+                if(s.flashOpacity > 0.1) { 
+                    ctx.strokeStyle = `rgba(255, 0, 255, ${s.flashOpacity})`; 
+                    ctx.strokeRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4); 
+                }
+            } else if (s.map[y][x] === 2) {
+                ctx.fillStyle = `rgba(241, 196, 15, ${s.flashOpacity + 0.3})`; 
+                ctx.fillRect(tx + 5, ty + 5, s.tileSize - 10, s.tileSize - 10);
+            }
+        }
+    }
+    const pX = s.player.x * s.tileSize + s.tileSize/2, pY = s.player.y * s.tileSize + s.tileSize/2;
+    const grad = ctx.createRadialGradient(pX, pY, 0, pX, pY, s.tileSize * 1.8);
+    grad.addColorStop(0, 'rgba(255, 0, 255, 0.4)'); 
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = grad; 
+    ctx.beginPath(); 
+    ctx.arc(pX, pY, s.tileSize * 1.8, 0, Math.PI*2); 
+    ctx.fill();
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#ff00ff");
+    ctx.restore();
+    if (s.flashOpacity <= 0) { 
+        ctx.fillStyle = "rgba(0,0,0,0.85)"; 
+        ctx.fillRect(0, 0, canvas.width, canvas.height); 
+    }
+}
+
+// --- MODE 05 : MOUVANT ---
+let stateMouv = { player: { x: 1, y: 1 }, map: [], mapSize: 11, level: 1, tileSize: 80, lastMutation: 0 };
+
+function initMouv() { 
+    currentMode = 'mouv';
+    const savedLevel = getLevel('mouv');
+    stateMouv.level = savedLevel || 1; 
+    stateMouv.mapSize = 11; 
+    resetMouv(); 
+}
+
+function resetMouv() { 
+    stateMouv.player = { x: 1, y: 1 }; 
+    stateMouv.mapSize = 11 + ((stateMouv.level - 1) * 2);
+    stateMouv.map = generateMaze(stateMouv.mapSize); 
+    stateMouv.lastMutation = Date.now(); 
+    startLevelSystem(); 
+}
+
+function drawMouv(ctx) {
+    const s = stateMouv; 
+    const canvas = document.getElementById('game-canvas');
+    if(Date.now() - s.lastMutation > 1500) { 
+        mutateMap(s); 
+        s.lastMutation = Date.now(); 
+    }
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    ctx.save(); 
+    ctx.translate(camX, camY);
+    renderMap(ctx, s.map, s.mapSize, s.tileSize, "#001a1a", "#00f0ff");
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#00f0ff");
+    ctx.restore();
+}
+
+// --- MODE 06 : MÉMOIRE ---
+let stateMem = { player: { x: 1, y: 1 }, map: [], mapSize: 9, level: 1, tileSize: 0, isDark: false, lastWallHit: { x: -1, y: -1, time: 0 }, memoryTimeLeft: 5 };
+
+function initMem() { 
+    currentMode = 'mem';
+    const savedLevel = getLevel('mem');
+    stateMem.level = savedLevel || 1; 
+    stateMem.mapSize = 9; 
+    resetMem(); 
+}
+
+function resetMem() {
+    stateMem.player = { x: 1, y: 1 };
+    stateMem.mapSize = 9 + ((stateMem.level - 1) * 2);
+    stateMem.map = generateMaze(stateMem.mapSize);
+    stateMem.isDark = false;
+    stateMem.memoryTimeLeft = 5;
+    
+    const status = document.getElementById('status-text');
+    if(status) status.innerText = "MÉMORISATION...";
+    
+    let timer = setInterval(() => {
+        stateMem.memoryTimeLeft--;
+        if(stateMem.memoryTimeLeft <= 0) {
+            clearInterval(timer);
+            stateMem.isDark = true;
+            startLevelSystem();
+        }
+    }, 1000);
+}
+
+function drawMem(ctx) {
+    const s = stateMem;
+    const canvas = document.getElementById('game-canvas');
+    s.tileSize = Math.min(canvas.width, canvas.height) / s.mapSize;
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    
+    ctx.save();
+    ctx.translate(camX, camY);
+
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            const tx = x * s.tileSize, ty = y * s.tileSize;
+            if (s.map[y][x] === 1) {
+                if (!s.isDark) {
+                    ctx.fillStyle = "#1a0033"; 
+                    ctx.fillRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4);
+                    ctx.strokeStyle = "#3498db"; 
+                    ctx.strokeRect(tx + 4, ty + 4, s.tileSize - 8, s.tileSize - 8);
+                } else if (s.lastWallHit.x === x && s.lastWallHit.y === y && Date.now() - s.lastWallHit.time < 300) {
+                    ctx.fillStyle = "#ff003c"; 
+                    ctx.fillRect(tx, ty, s.tileSize, s.tileSize);
+                }
+            } else if (s.map[y][x] === 2) {
+                ctx.fillStyle = !s.isDark ? "#f1c40f" : "rgba(46, 204, 113, 0.2)";
+                ctx.fillRect(tx + 5, ty + 5, s.tileSize - 10, s.tileSize - 10);
+            }
+        }
+    }
+    
+    if(!s.isDark) {
+        ctx.fillStyle = "#f1c40f"; 
+        ctx.font = "bold 60px Courier New"; 
+        ctx.textAlign = "center";
+        ctx.fillText(s.memoryTimeLeft, 0, 20);
+    }
+    
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#3498db");
+    ctx.restore();
+}
+
+// --- MODE 07 : COLLECTEUR ---
+let stateColl = { 
+    player: { x: 1, y: 1 }, 
+    map: [], 
+    mapSize: 13, 
+    level: 1, 
+    tileSize: 80, 
+    starsCollected: 0, 
+    totalStars: 3 
+};
+
+function initColl() { 
+    currentMode = 'coll';
+    const savedLevel = getLevel('coll');
+    stateColl.level = savedLevel || 1; 
+    stateColl.mapSize = 13; 
+    resetColl(); 
+}
+
+function resetColl() {
+    stateColl.player = { x: 1, y: 1 };
+    stateColl.starsCollected = 0;
+    stateColl.totalStars = 2 + stateColl.level;
+    stateColl.mapSize = 11 + ((stateColl.level - 1) * 2);
+    
+    stateColl.map = generateMaze(stateColl.mapSize);
+    
+    let count = 0;
+    while(count < stateColl.totalStars) {
+        let rx = Math.floor(Math.random() * (stateColl.mapSize - 2)) + 1;
+        let ry = Math.floor(Math.random() * (stateColl.mapSize - 2)) + 1;
+        if(stateColl.map[ry][rx] === 0 && (rx !== 1 || ry !== 1)) {
+            stateColl.map[ry][rx] = 3; 
+            count++;
+        }
+    }
+    
+    const status = document.getElementById('status-text');
+    if(status) status.innerText = `COLLECTE : 0/${stateColl.totalStars}`;
+    startLevelSystem();
+}
+
+function drawColl(ctx) {
+    const s = stateColl;
+    const canvas = document.getElementById('game-canvas');
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    
+    ctx.save();
+    ctx.translate(camX, camY);
+
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            const tile = s.map[y][x];
+            const tx = x * s.tileSize;
+            const ty = y * s.tileSize;
+
+            if (tile === 1) {
+                ctx.fillStyle = "#1a1500";
+                ctx.fillRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4);
+                ctx.strokeStyle = "rgba(241, 196, 15, 0.3)";
+                ctx.strokeRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4);
+            } 
+            else if (tile === 2) {
+                if (s.starsCollected >= s.totalStars) {
+                    ctx.shadowBlur = 15; 
+                    ctx.shadowColor = "#2ecc71";
+                    ctx.fillStyle = "#2ecc71";
+                    ctx.fillRect(tx + 5, ty + 5, s.tileSize - 10, s.tileSize - 10);
+                    ctx.shadowBlur = 0;
+                } else {
+                    ctx.strokeStyle = "#444";
+                    ctx.strokeRect(tx + 10, ty + 10, s.tileSize - 20, s.tileSize - 20);
+                }
+            } 
+            else if (tile === 3) {
+                const pulse = Math.sin(Date.now() * 0.005) * 5;
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = "#f1c40f";
+                ctx.fillStyle = "#f1c40f";
+                ctx.beginPath();
+                ctx.arc(tx + s.tileSize/2, ty + s.tileSize/2, 10 + pulse, 0, Math.PI*2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+    }
+
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#f1c40f");
+    ctx.restore();
+}
+
+// --- MODE 08 : SENTINELLE ---
+let stateSent = { 
+    player: { x: 1, y: 1 }, 
+    map: [], 
+    mapSize: 11, 
+    level: 1, 
+    tileSize: 80,
+    enemies: [], 
+    bullets: [], 
+    ammo: 3,
+    lastEnemyMove: 0
+};
+
+function fire(dx, dy) {
+    if (currentMode !== 'sent' || stateSent.ammo <= 0) return;
+    stateSent.bullets.push({ 
+        x: stateSent.player.x, 
+        y: stateSent.player.y, 
+        dx: dx * 0.2, 
+        dy: dy * 0.2 
+    });
+    stateSent.ammo--;
+    updateUI();
+}
+
+function initSent() { 
+    currentMode = 'sent';
+    const savedLevel = getLevel('sent');
+    stateSent.level = savedLevel || 1; 
+    stateSent.mapSize = 11;
+    resetSent(); 
+}
+
+function resetSent() {
+    const s = stateSent;
+    s.player = { x: 1, y: 1 };
+    s.mapSize = 11 + ((s.level - 1) * 2);
+    s.ammo = 2 + s.level;
+    s.bullets = [];
+    s.enemies = [];
+    s.map = generateMaze(s.mapSize);
+    s.lastEnemyMove = Date.now();
+
+    const enemyCount = 2 + s.level;
+    while(s.enemies.length < enemyCount) {
+        let ex = Math.floor(Math.random() * (s.mapSize - 2)) + 1;
+        let ey = Math.floor(Math.random() * (s.mapSize - 2)) + 1;
+        if(s.map[ey][ex] === 0 && (ex > 4 || ey > 4)) {
+            s.enemies.push({ 
+                realX: ex, realY: ey, 
+                dx: Math.random() > 0.5 ? 1 : -1, 
+                dy: 0, 
+                alive: true 
+            });
+        }
+    }
+    updateUI();
+    startLevelSystem();
+}
+
+function updateSentLogic(s) {
+    if (!s.lastEnemyMove || Date.now() - s.lastEnemyMove > 300) {
+        s.enemies.forEach(en => {
+            if (!en.alive) return;
+            let nx = en.realX + en.dx;
+            let ny = en.realY + en.dy;
+
+            if (s.map[ny] && s.map[ny][nx] === 1) {
+                const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+                const validDirs = dirs.filter(([dx, dy]) => s.map[en.realY + dy][en.realX + dx] !== 1);
+                if (validDirs.length > 0) {
+                    const newDir = validDirs[Math.floor(Math.random() * validDirs.length)];
+                    en.dx = newDir[0]; 
+                    en.dy = newDir[1];
+                }
+            } else {
+                en.realX = nx; 
+                en.realY = ny;
+            }
+        });
+        s.lastEnemyMove = Date.now();
+    }
+
+    s.enemies.forEach(en => {
+        if (en.alive && en.realX === s.player.x && en.realY === s.player.y) {
+            resetSent();
+        }
+    });
+
+    s.bullets.forEach((b, index) => {
+        b.x += b.dx; 
+        b.y += b.dy;
+        if (s.map[Math.round(b.y)] && s.map[Math.round(b.y)][Math.round(b.x)] === 1) {
+            s.bullets.splice(index, 1);
+            return;
+        }
+        s.enemies.forEach(en => {
+            if (en.alive && Math.sqrt(Math.pow(b.x - en.realX, 2) + Math.pow(b.y - en.realY, 2)) < 0.6) {
+                en.alive = false;
+                s.bullets.splice(index, 1);
+            }
+        });
+    });
+}
+
+function drawSent(ctx) {
+    const s = stateSent;
+    const canvas = document.getElementById('game-canvas');
+    
+    updateSentLogic(s);
+
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    
+    ctx.save();
+    ctx.translate(camX, camY);
+
+    renderMap(ctx, s.map, s.mapSize, s.tileSize, "#050a0f", "#3498db");
+
+    s.bullets.forEach(b => {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(b.x * s.tileSize + s.tileSize/2, b.y * s.tileSize + s.tileSize/2, 5, 0, Math.PI*2);
+        ctx.fill();
+    });
+
+    s.enemies.forEach(en => {
+        if(!en.alive) return;
+        ctx.shadowBlur = 15; 
+        ctx.shadowColor = "#ff003c";
+        ctx.fillStyle = "#ff003c";
+        ctx.beginPath();
+        ctx.arc(en.realX * s.tileSize + s.tileSize/2, en.realY * s.tileSize + s.tileSize/2, 18, 0, Math.PI*2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#3498db");
+    ctx.restore();
+}
+
+// --- MODE 09 : INVERSÉ ---
+let stateInv = { 
+    player: { x: 1, y: 1 }, 
+    map: [], 
+    mapSize: 11, 
+    level: 1, 
+    tileSize: 80 
+};
+
+function initInverse() { 
+    currentMode = 'inverse';
+    const savedLevel = getLevel('inv');
+    stateInv.level = savedLevel || 1; 
+    stateInv.mapSize = 11; 
+    resetInverse(); 
+}
+
+function resetInverse() {
+    stateInv.player = { x: 1, y: 1 };
+    stateInv.mapSize = 11 + ((stateInv.level - 1) * 2);
+    stateInv.map = generateMaze(stateInv.mapSize);
+    const status = document.getElementById('status-text');
+    if(status) status.innerText = "⚠ COMMANDES_INVERSÉES";
+    startLevelSystem();
+}
+
+function drawInverse(ctx) {
+    const s = stateInv;
+    const canvas = document.getElementById('game-canvas');
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    
+    ctx.save();
+    ctx.translate(camX, camY);
+
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            const tx = x * s.tileSize;
+            const ty = y * s.tileSize;
+            if (s.map[y][x] === 1) {
+                ctx.fillStyle = "#0a000a";
+                ctx.fillRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4);
+                ctx.strokeStyle = "#ff00ff";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(tx + 2, ty + 2, s.tileSize - 4, s.tileSize - 4);
+            } else if (s.map[y][x] === 2) {
+                const shift = Math.random() * 3;
+                ctx.fillStyle = "#00f0ff";
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = "#ff00ff";
+                ctx.fillRect(tx + 10 + shift, ty + 10, s.tileSize - 20, s.tileSize - 20);
+                ctx.shadowBlur = 0;
+            }
+        }
+    }
+
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#ff00ff");
+    ctx.restore();
+}
+
+// --- MODE 10 : ARIANE ---
+let stateAriane = { 
+    player: { x: 1, y: 1 }, 
+    map: [], 
+    mapSize: 13, 
+    level: 1, 
+    tileSize: 80,
+    visited: [], 
+    totalEmpty: 0, 
+    foundCount: 1 
+};
+
+function initAriane() {
+    currentMode = 'ariane';
+    const savedLevel = getLevel('ari');
+    stateAriane.level = savedLevel || 1;
+    stateAriane.player = { x: 1, y: 1 };
+    stateAriane.visited = ["1,1"];
+    stateAriane.mapSize = 13 + ((stateAriane.level - 1) * 2);
+    stateAriane.map = generateMaze(stateAriane.mapSize);
+    
+    stateAriane.totalEmpty = 0;
+    stateAriane.map.forEach(row => row.forEach(tile => {
+        if(tile === 0 || tile === 2) stateAriane.totalEmpty++;
+    }));
+    stateAriane.foundCount = 1;
+    startLevelSystem();
+}
+
+function drawAriane(ctx) {
+    const s = stateAriane;
+    const canvas = document.getElementById('game-canvas');
+    
+    s.tileSize = 80; 
+    
+    const camX = canvas.width / 2 - (s.player.x * s.tileSize + s.tileSize / 2);
+    const camY = canvas.height / 2 - (s.player.y * s.tileSize + s.tileSize / 2);
+
+    ctx.save();
+    ctx.translate(camX, camY);
+
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            if (s.map[y][x] === 1) {
+                ctx.fillStyle = "rgba(241, 196, 15, 0.05)";
+                ctx.fillRect(x * s.tileSize + 2, y * s.tileSize + 2, s.tileSize - 4, s.tileSize - 4);
+                ctx.strokeStyle = "#f1c40f";
+                ctx.strokeRect(x * s.tileSize + 2, y * s.tileSize + 2, s.tileSize - 4, s.tileSize - 4);
+            } else if (s.map[y][x] === 2) {
+                ctx.fillStyle = "#2ecc71";
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = "#2ecc71";
+                ctx.fillRect(x * s.tileSize + 5, y * s.tileSize + 5, s.tileSize - 10, s.tileSize - 10);
+                ctx.shadowBlur = 0;
+            }
+        }
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#f1c40f";
+    ctx.lineWidth = s.tileSize * 0.3;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    
+    s.visited.forEach((pos, i) => {
+        const [vx, vy] = pos.split(',').map(Number);
+        const px = vx * s.tileSize + s.tileSize / 2;
+        const py = vy * s.tileSize + s.tileSize / 2;
+        if (i === 0) ctx.moveTo(px, py); 
+        else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#f1c40f");
+    ctx.restore();
+}
+
+// --- MODE 11 : TRAQUEUR ---
+let stateTraque = { 
+    player: { x: 1, y: 1 }, 
+    hunter: { x: 0, y: 0, displayX: 0, displayY: 0, stunned: 0 },
+    map: [], 
+    mapSize: 13, 
+    level: 1, 
+    tileSize: 90, 
+    bullets: [], 
+    ammo: 3
+};
+
+function initTraque() {
+    currentMode = 'traque';
+    const savedLevel = getLevel('traque');
+    stateTraque.level = savedLevel || 1;
+    resetTraque();
+}
+
+function resetTraque() {
+    const s = stateTraque;
+    s.mapSize = 11 + ((s.level - 1) * 2);
+    s.player = { x: 1, y: 1 };
+    s.bullets = [];
+    s.ammo = 3 + Math.floor(s.level / 2);
+    
+    s.map = generateMaze(s.mapSize);
+
+    s.hunter = { 
+        x: s.mapSize - 3, 
+        y: s.mapSize - 2, 
+        displayX: s.mapSize - 3, 
+        displayY: s.mapSize - 2, 
+        stunned: 0 
+    };
+    
+    updateUI();
+    startLevelSystem();
+}
+
+function hunterTakeStep() {
+    const s = stateTraque;
+    if (currentMode !== 'traque' || Date.now() < s.hunter.stunned) return;
+
+    let start = { x: s.hunter.x, y: s.hunter.y };
+    let target = { x: s.player.x, y: s.player.y };
+    
+    let queue = [[start]];
+    let visited = new Set([`${start.x},${start.y}`]);
+    let path = [];
+
+    while (queue.length > 0) {
+        let currentPath = queue.shift();
+        let lastStep = currentPath[currentPath.length - 1];
+
+        if (lastStep.x === target.x && lastStep.y === target.y) {
+            path = currentPath;
+            break;
+        }
+
+        for (let [dx, dy] of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
+            let next = { x: lastStep.x + dx, y: lastStep.y + dy };
+            let key = `${next.x},${next.y}`;
+
+            if (next.y >= 0 && next.y < s.mapSize && next.x >= 0 && next.x < s.mapSize &&
+                s.map[next.y][next.x] !== 1 && !visited.has(key)) {
+                visited.add(key);
+                queue.push([...currentPath, next]);
+            }
+        }
+    }
+
+    if (path.length > 1) {
+        s.hunter.x = path[1].x;
+        s.hunter.y = path[1].y;
+    }
+}
+
+function updateTraqueurLogic(s) {
+    const now = Date.now();
+
+    for (let i = s.bullets.length - 1; i >= 0; i--) {
+        let b = s.bullets[i];
+        b.x += b.dx; 
+        b.y += b.dy;
+        
+        let gridX = Math.round(b.x), gridY = Math.round(b.y);
+        
+        if (s.map[gridY] && s.map[gridY][gridX] === 1) {
+            s.bullets.splice(i, 1); 
+            continue;
+        }
+
+        let distH = Math.sqrt(Math.pow(b.x - s.hunter.x, 2) + Math.pow(b.y - s.hunter.y, 2));
+        if (distH < 0.6) {
+            s.hunter.stunned = now + 2000;
+            s.bullets.splice(i, 1); 
+            continue;
+        }
+    }
+
+    s.hunter.displayX += (s.hunter.x - s.hunter.displayX) * 0.15;
+    s.hunter.displayY += (s.hunter.y - s.hunter.displayY) * 0.15;
+    
+    const distP = Math.sqrt(Math.pow(s.hunter.displayX - s.player.x, 2) + Math.pow(s.hunter.displayY - s.player.y, 2));
+    if (distP < 0.45 && now > s.hunter.stunned) {
+        resetTraque();
+    }
+}
+
+function drawTraque(ctx) {
+    const s = stateTraque;
+    updateTraqueurLogic(s);
+    const canvas = document.getElementById('game-canvas');
+    const camX = canvas.width/2 - (s.player.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (s.player.y * s.tileSize + s.tileSize/2);
+    
+    ctx.save();
+    ctx.translate(camX, camY);
+    
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            if (s.map[y][x] === 1) {
+                ctx.fillStyle = "#200";
+                ctx.fillRect(x * s.tileSize + 2, y * s.tileSize + 2, s.tileSize - 4, s.tileSize - 4);
+                ctx.strokeStyle = "#ff0000";
+                ctx.strokeRect(x * s.tileSize + 2, y * s.tileSize + 2, s.tileSize - 4, s.tileSize - 4);
+            } else if (s.map[y][x] === 2) {
+                ctx.fillStyle = "#2ecc71";
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = "#2ecc71";
+                ctx.fillRect(x * s.tileSize + 5, y * s.tileSize + 5, s.tileSize - 10, s.tileSize - 10);
+                ctx.shadowBlur = 0;
+            }
+        }
+    }
+    
+    s.bullets.forEach(b => {
+        ctx.fillStyle = "#fff";
+        ctx.beginPath();
+        ctx.arc(b.x * s.tileSize + s.tileSize/2, b.y * s.tileSize + s.tileSize/2, 6, 0, Math.PI*2);
+        ctx.fill();
+    });
+
+    ctx.globalAlpha = s.hunter.stunned > 0 ? 0.4 : 1;
+    ctx.fillStyle = s.hunter.stunned > 0 ? "#444" : "#ff003c";
+    ctx.beginPath();
+    ctx.arc(s.hunter.displayX * s.tileSize + s.tileSize/2, s.hunter.displayY * s.tileSize + s.tileSize/2, 22, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    renderPlayer(ctx, s.player.x, s.player.y, s.tileSize, "#fff", "#00d2ff");
+    ctx.restore();
+}
+
+function fireTraque(dx, dy) {
+    const s = stateTraque;
+    if (currentMode !== 'traque' || s.ammo <= 0) return;
+    s.bullets.push({ x: s.player.x, y: s.player.y, dx: dx * 0.25, dy: dy * 0.25 });
+    s.ammo--;
+    updateUI();
+}
+
+// --- MODE 12 : FUSION ---
+let stateFusion = {
+    players: [
+        { x: 1, y: 1, color: "#3498db" },
+        { x: 0, y: 0, color: "#9b59b6" }
+    ],
+    map: [],
+    mapSize: 13,
+    level: 1,
+    tileSize: 70,
+    isFused: false,
+    exitPos: { x: 0, y: 0 },
+    gameFinished: false
+};
+
+function initFusion() {
+    currentMode = 'fusion';
+    const savedLevel = getLevel('fusion');
+    stateFusion.level = savedLevel || 1;
+    resetFusion();
+}
+
+function resetFusion() {
+    const s = stateFusion;
+    s.mapSize = 13 + ((s.level - 1) * 2);
+    s.map = generateMaze(s.mapSize);
+    
+    s.players[0].x = 1; 
+    s.players[0].y = 1;
+    s.players[1].x = s.mapSize - 2; 
+    s.players[1].y = s.mapSize - 2;
+    
+    let center = Math.floor(s.mapSize / 2);
+    s.exitPos = { x: center, y: center };
+    
+    s.map[center][center] = 0; 
+    if (center > 0) s.map[center-1][center] = 0; 
+    
+    s.isFused = false;
+    s.gameFinished = false;
+    startLevelSystem();
+}
+
+function moveFusionPlayer(pIdx, dx, dy) {
+    const s = stateFusion;
+    if (s.gameFinished) return;
+
+    let p = s.players[pIdx];
+    let nx = p.x + dx;
+    let ny = p.y + dy;
+
+    if (s.map[ny] && s.map[ny][nx] !== 1) {
+        p.x = nx;
+        p.y = ny;
+    }
+
+    let dist = Math.abs(s.players[0].x - s.players[1].x) + Math.abs(s.players[0].y - s.players[1].y);
+    
+    if (dist <= 1 && !s.isFused) {
+        s.isFused = true;
+        s.map[s.exitPos.y][s.exitPos.x] = 2;
+        const mission = document.getElementById('mission-text');
+        if(mission) {
+            mission.innerText = "FUSION_OK : GO_CENTER";
+            mission.style.color = "#f1c40f";
+        }
+    }
+
+    if (s.isFused &&
+        s.players[0].x === s.exitPos.x &&
+        s.players[0].y === s.exitPos.y &&
+        s.players[1].x === s.exitPos.x &&
+        s.players[1].y === s.exitPos.y) {
+        handleVictory();
+    }
+}
+
+function drawFusionHalf(ctx, pIdx, xOffset, width, s) {
+    const p = s.players[pIdx];
+    const canvas = document.getElementById('game-canvas');
+    ctx.save();
+    
+    ctx.beginPath();
+    ctx.rect(xOffset, 0, width, canvas.height);
+    ctx.clip();
+
+    const camX = xOffset + width/2 - (p.x * s.tileSize + s.tileSize/2);
+    const camY = canvas.height/2 - (p.y * s.tileSize + s.tileSize/2);
+    ctx.translate(camX, camY);
+
+    for (let y = 0; y < s.mapSize; y++) {
+        for (let x = 0; x < s.mapSize; x++) {
+            if (s.map[y][x] === 1) {
+                ctx.fillStyle = "#050a10";
+                ctx.fillRect(x * s.tileSize + 2, y * s.tileSize + 2, s.tileSize - 4, s.tileSize - 4);
+                ctx.strokeStyle = s.isFused ? "#f1c40f" : "#444";
+                ctx.strokeRect(x * s.tileSize + 2, y * s.tileSize + 2, s.tileSize - 4, s.tileSize - 4);
+            } else if (s.map[y][x] === 2) {
+                ctx.fillStyle = "#f1c40f";
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = "#f1c40f";
+                ctx.fillRect(x * s.tileSize + 5, y * s.tileSize + 5, s.tileSize - 10, s.tileSize - 10);
+                ctx.shadowBlur = 0;
+            }
+        }
+    }
+
+    s.players.forEach(pl => {
+        ctx.fillStyle = pl.color;
+        ctx.shadowBlur = 15; 
+        ctx.shadowColor = pl.color;
+        ctx.beginPath();
+        ctx.arc(pl.x * s.tileSize + s.tileSize/2, pl.y * s.tileSize + s.tileSize/2, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+
+    ctx.restore();
+}
+
+function drawFusion(ctx) {
+    const s = stateFusion;
+    const canvas = document.getElementById('game-canvas');
+    const half = canvas.width / 2;
+
+    drawFusionHalf(ctx, 0, 0, half, s);
+    drawFusionHalf(ctx, 1, half, half, s);
+
+    ctx.fillStyle = s.isFused ? "#f1c40f" : "#333";
+    ctx.fillRect(half - 1, 0, 2, canvas.height);
+}
+
+// ==========================================
+// 5. BOUCLE DE RENDU PRINCIPALE
+// ==========================================
+function gameLoop() {
+    if (!currentMode) return;
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    switch(currentMode) {
+        case 'normal':   drawNormal(ctx);   break;
+        case 'rotation': drawRotation(ctx); break;
+        case 'eclipse':  drawEclipse(ctx);  break;
+        case 'mouv':     drawMouv(ctx);     break;
+        case 'mem':      drawMem(ctx);      break;
+        case 'coll':     drawColl(ctx);     break;
+        case 'sent':     drawSent(ctx);     break;
+        case 'inverse':  drawInverse(ctx);  break; 
+        case 'ariane':   drawAriane(ctx);   break;
+        case 'traque':   drawTraque(ctx);   break;
+        case 'fusion':   drawFusion(ctx);   break;
+    }
+    requestAnimationFrame(gameLoop);
+}
+
+// ==========================================
+// 6. LOGIQUE DE NAVIGATION & VICTOIRE
+// ==========================================
+function openMode(mode) {
+    currentMode = mode;
+    document.getElementById('main-menu').style.display = 'none';
+    document.getElementById('bg-canvas').style.display = 'none';
+    document.getElementById('game-ui').style.display = 'flex';
+  
+    const ammoUI = document.getElementById('ammo-display');
+    if (ammoUI) {
+        ammoUI.style.display = (mode === 'sent' || mode === 'traque') ? 'block' : 'none';
+    }
+
+    const shootUI = document.getElementById('shoot-controls');
+    if (shootUI) {
+        shootUI.style.display = (mode === 'sent' || mode === 'traque') ? 'grid' : 'none';
+    }
+
+    document.documentElement.style.setProperty('--bar-color', modeColors[mode] || '#fff');
+    const mName = "init" + mode.charAt(0).toUpperCase() + mode.slice(1);
+    if (window[mName]) window[mName]();
+    
+    resizeCanvas(); 
+    gameLoop();
+}
+
+function handleVictory() {
+    clearInterval(timerInterval);
+    let s = getActiveState(); 
+    
+    const messages = {
+        'normal': "LABYRINTHE MAÎTRISÉ",
+        'rotation': "ROTATION SYNCHRONISÉE",
+        'eclipse': "ÉCLIPSE TERMINÉE",
+        'mouv': "MUTATIONS STABILISÉES",
+        'mem': "MÉMOIRE SYNCHRONISÉE",
+        'coll': "UNITÉS RÉCUPÉRÉES",
+        'sent': "ZONE SÉCURISÉE",
+        'inverse': "MIROIR BRISÉ",
+        'ariane': "FIL D'ARIANE TERMINÉ",
+        'traque': "PRÉDATEUR SEMÉ",
+        'fusion': "FUSION STABLE"
+    };
+
+    const winMsg = messages[currentMode] || "SYSTÈME SYNCHRONISÉ";
+    
+    updateProgression();
+    
+    const titleElem = document.getElementById('win-title');
+    const overlay = document.getElementById('overlay-win');
+    
+    if (titleElem) titleElem.innerText = winMsg;
+    if (overlay) {
+        overlay.style.display = 'flex';
+        overlay.style.pointerEvents = 'auto';
+    }
+}
+
+function nextLevel() {
+    const s = getActiveState();
+    if (!s) return;
+
+    const overlay = document.getElementById('overlay-win');
+    if (overlay) {
+        overlay.style.display = 'none';
+        overlay.style.pointerEvents = 'none';
+    }
+
+    s.level++;
+
+    let rName = "reset" + currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
+
+    if (typeof window[rName] === 'function') {
+        window[rName]();
+    } else {
+        console.error("Fonction de reset introuvable : " + rName);
+    }
+    
+    startLevelSystem();
+    gameLoop();
+}
+
+function getActiveState() {
+    switch (currentMode) {
+        case 'normal': return stateNormal;
+        case 'rotation': return stateRotation;
+        case 'eclipse': return stateEclipse;
+        case 'mouv': return stateMouv;
+        case 'mem': return stateMem;
+        case 'coll': return stateColl;
+        case 'sent': return stateSent;
+        case 'inverse': return stateInv;
+        case 'ariane': return stateAriane;
+        case 'traque': return stateTraque;
+        case 'fusion': return stateFusion;
+        default: return null;
+    }
+}
+
+function movePlayer(dx, dy) {
+    let s = getActiveState();
+    if (!s || !s.map) return;
+    
+    if (currentMode === 'inverse') {
+        dx *= -1; 
+        dy *= -1; 
+    }
+
+    if (currentMode === 'mem' && !s.isDark) return;
+
+    const nx = s.player.x + dx;
+    const ny = s.player.y + dy;
+    const posKey = `${nx},${ny}`;
+
+    if (s.map[ny] && s.map[ny][nx] !== 1) {
+        if (currentMode === 'ariane') {
+            if (s.visited.includes(posKey)) return; 
+            s.visited.push(posKey);
+            s.foundCount++;
+            updateUI();
+        }
+
+        s.player.x = nx; 
+        s.player.y = ny;
+
+        if (currentMode === 'coll' && s.map[ny][nx] === 3) {
+            s.map[ny][nx] = 0; 
+            s.starsCollected++;
+            const status = document.getElementById('status-text');
+            if (status) status.innerText = `COLLECTE : ${s.starsCollected}/${s.totalStars}`;
+        }
+
+        if (s.map[ny][nx] === 2) {
+            let canWin = true;
+            if (currentMode === 'coll' && s.starsCollected < s.totalStars) {
+                canWin = false;
+            }
+
+            if (canWin) {
+                handleVictory();
+                return;
+            }
+        }
+
+        if (currentMode === 'traque') {
+            hunterTakeStep(); 
+        }
+
+    } else {
+        if (currentMode === 'mem' && s.isDark) {
+            s.lastWallHit = { x: nx, y: ny, time: Date.now() };
+        }
+    }
+}
+
+function quitGame() {
+    currentMode = null; 
+    clearInterval(timerInterval);
+    
+    document.getElementById('game-ui').style.display = 'none';
+    document.getElementById('overlay-win').style.display = 'none';
+    document.getElementById('main-menu').style.display = 'flex';
+    document.getElementById('bg-canvas').style.display = 'block';
+
+    const shootUI = document.getElementById('shoot-controls');
+    if (shootUI) shootUI.style.display = 'none';
+}
+
+// ==========================================
+// 7. OUTILS DE RENDU & SYSTÈME
+// ==========================================
+function renderMap(ctx, map, size, tSize, wallFill, wallStroke) {
+    for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+            if (map[y][x] === 1) {
+                ctx.fillStyle = wallFill; 
+                ctx.fillRect(x * tSize + 2, y * tSize + 2, tSize - 4, tSize - 4);
+                ctx.strokeStyle = wallStroke; 
+                ctx.strokeRect(x * tSize + 2, y * tSize + 2, tSize - 4, tSize - 4);
+            } else if (map[y][x] === 2) {
+                ctx.fillStyle = "#f1c40f"; 
+                ctx.shadowBlur = 15; 
+                ctx.shadowColor = "#f1c40f";
+                ctx.fillRect(x * tSize + 5, y * tSize + 5, tSize - 10, tSize - 10); 
+                ctx.shadowBlur = 0;
+            }
+        }
+    }
+}
+
+function renderPlayer(ctx, px, py, tSize, color, glow) {
+    ctx.shadowBlur = 15; 
+    ctx.shadowColor = glow; 
+    ctx.fillStyle = color;
+    ctx.beginPath(); 
+    ctx.arc(px * tSize + tSize/2, py * tSize + tSize/2, 15, 0, Math.PI * 2);
+    ctx.fill(); 
+    ctx.shadowBlur = 0;
+}
+
+function startLevelSystem() { 
+    resetTimer(); 
+    startTimer(); 
+}
+
+function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+        const diff = Date.now() - startTime;
+        const mins = Math.floor(diff / 60000).toString().padStart(2, '0');
+        const secs = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+        const timerElem = document.getElementById('ui-timer');
+        if (timerElem) timerElem.innerText = `${mins}:${secs}`;
+    }, 1000);
+}
+
+function resetTimer() { 
+    clearInterval(timerInterval); 
+    const timerElem = document.getElementById('ui-timer');
+    if (timerElem) timerElem.innerText = "00:00"; 
+}
+
+function handleInput(dir) {
+    let dx = 0, dy = 0;
+    if(dir === 'up') dy = -1; 
+    if(dir === 'down') dy = 1;
+    if(dir === 'left') dx = -1; 
+    if(dir === 'right') dx = 1;
+    movePlayer(dx, dy);
+}
+
+function resizeCanvas() { 
+    const c = document.getElementById('game-canvas'); 
+    const z = document.getElementById('game-zone'); 
+    if (c && z) { 
+        c.width = z.clientWidth; 
+        c.height = z.clientHeight; 
+    } 
+}
+
+// ==========================================
+// 8. SYSTÈME DE CONTRÔLE TACTILE
+// ==========================================
+
+let stickActive = false;
+let stickStartPos = { x: 0, y: 0 };
+let activePIdx = 0;
+
+const joyBase = document.getElementById('joy-base');
+const joyStick = document.getElementById('joy-stick');
+const gameZone = document.getElementById('game-zone');
+
+if (gameZone) {
+    gameZone.addEventListener('touchstart', (e) => {
+        if (controlType !== 'joystick' || !currentMode) return;
+        
+        stickActive = true;
+        const touch = e.touches[0];
+        stickStartPos = { x: touch.clientX, y: touch.clientY };
+
+        if (currentMode === 'fusion') {
+            activePIdx = (touch.clientX < window.innerWidth / 2) ? 0 : 1;
+        }
+
+        if (joyBase) {
+            joyBase.style.display = 'block';
+            joyBase.style.left = `${stickStartPos.x - 50}px`;
+            joyBase.style.top = `${stickStartPos.y - 50}px`;
+        }
+    });
+
+    gameZone.addEventListener('touchmove', (e) => {
+        if (!stickActive) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const dx = touch.clientX - stickStartPos.x;
+        const dy = touch.clientY - stickStartPos.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (joyStick) {
+            const moveX = Math.min(Math.abs(dx), 30) * Math.sign(dx);
+            const moveY = Math.min(Math.abs(dy), 30) * Math.sign(dy);
+            joyStick.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        }
+
+        if (dist > 35) {
+            let stepX = 0;
+            let stepY = 0;
+
+            if (Math.abs(dx) > Math.abs(dy)) {
+                stepX = dx > 0 ? 1 : -1;
+            } else {
+                stepY = dy > 0 ? 1 : -1;
+            }
+
+            if (currentMode === 'fusion') {
+                moveFusionPlayer(activePIdx, stepX, stepY);
+            } else {
+                movePlayer(stepX, stepY);
+            }
+
+            stickStartPos = { x: touch.clientX, y: touch.clientY };
+            if (joyBase) {
+                joyBase.style.left = `${stickStartPos.x - 50}px`;
+                joyBase.style.top = `${stickStartPos.y - 50}px`;
+            }
+        }
+    }, { passive: false });
+}
+
+window.addEventListener('touchend', () => {
+    stickActive = false;
+    if (joyBase) joyBase.style.display = 'none';
+    if (joyStick) joyStick.style.transform = 'translate(0,0)';
+});
+
+// ==========================================
+// 9. SYSTÈME DE TIR ET REDIMENSIONNEMENT
+// ==========================================
+
+window.onload = function() {
+    resizeCanvas();
+    loadProgression();
+};
+
+window.onresize = resizeCanvas;
+
+function handleShoot(dx, dy) {
+    if (window.event) window.event.preventDefault();
+    
+    if (currentMode === 'sent') {
+        fire(dx, dy);
+    } else if (currentMode === 'traque') {
+        fireTraque(dx, dy);
+    }
+}
+
+// ==========================================
+// 10. CENTRE DE PROGRESSION
+// ==========================================
+
+function openSettings() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) {
+        modal.style.display = 'flex';
+        renderLevelsGrid();
+    }
+}
+
+function closeSettings() {
+    const modal = document.getElementById('settings-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+function toggleSettings() {
+    const modal = document.getElementById('settings-modal');
+    if (modal.style.display === 'flex') {
+        closeSettings();
+    } else {
+        openSettings();
+    }
+}
+
+function renderLevelsGrid() {
+    const grid = document.getElementById('levels-grid');
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    let maxToShow = progression.unlockedLevels + 3;
+    
+    for (let i = 1; i <= maxToShow; i++) {
+        const btn = document.createElement('button');
+        btn.innerText = i;
+        
+        if (i <= progression.unlockedLevels) {
+            btn.className = 'level-btn unlocked';
+            btn.onclick = () => selectLevel(i);
+        } else {
+            btn.className = 'level-btn';
+            btn.innerText = '🔒';
+            btn.disabled = true;
+        }
+        grid.appendChild(btn);
+    }
+}
+
+function selectLevel(levelNumber) {
+    let state = getActiveState();
+    if (state) {
+        state.level = levelNumber;
+    }
+
+    closeSettings();
+    
+    const rName = "reset" + currentMode.charAt(0).toUpperCase() + currentMode.slice(1);
+    if (window[rName]) window[rName]();
+    
+    resizeCanvas();
+    gameLoop();
+}
+
+function hardResetProgression() {
+    if (confirm("Voulez-vous vraiment effacer toute votre progression ?")) {
+        localStorage.removeItem('mazeLevels');
+        progression.unlockedLevels = 1;
+        renderLevelsGrid();
+        alert("Mémoire réinitialisée.");
+    }
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('settings-modal');
+    if (event.target == modal) {
+        closeSettings();
+    }
+}
+</script>
